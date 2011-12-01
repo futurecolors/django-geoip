@@ -3,6 +3,7 @@ import socket
 import struct
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from management.commands import ipgeobase_settings
 
 class Country(models.Model):
     code = models.CharField(_('country code'), max_length=2, primary_key=True)

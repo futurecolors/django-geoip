@@ -1,68 +1,70 @@
 # -*- coding: utf-8 -*-
+import tempfile
 from zipfile import ZipFile
 from django.core.management.base import BaseCommand
+from django.conf import settings
 import urllib2
 from django_geoip.models import City, Region, Country, IpRange
 
 class Command(BaseCommand):
     help = 'Updates ipgeobase'
-    incoming = {}
-
-    SOURCE_URL = 'http://ipgeobase.ru/files/db/Main/geo_files.zip'
-    FIELDS_DELIMITER = "\t"
-    ENCODING = 'windows-1251'
-
-    CITIES_FILENAME = 'cities.txt'
-    #    1	Хмельницкий	Хмельницкая область	Центральная Украина	49.416668	27.000000
-    CITIES_FIELDS = ['city_id', 'city_name', 'region_name', 'district_name', 'lat', 'lng']
-
-    CIDR_FILENAME = 'cidr_optim.txt'
-    #    1578795008	1578827775	94.26.128.0 - 94.26.255.255	RU	2287
-    CIDR_FIELDS = ['start_ip', 'end_ip', 'ip_range_human', 'country_code', 'city_id']
-
+    incoming = {'countries': set(),
+                'city_country_mapping': {}
+    }
 
     def handle(self, *args, **options):
         print u'Updating ipgeobase...'
-        archive = self._download_unpack_archive()
-        self._process_cidr_file(archive)
-        self._process_cities_file(archive)
+        files = self._download_extract_archive(settings.IPGEOBASE_SOURCE_URL)
+        cidr_info = self._process_cidr_file(files['cidr'])
+        city_info = self._process_cities_file(files['cities'], cidr_info['city_country_mapping'])
         self._update_geography()
         self._update_cidr()
 
-    def _download_unpack_archive(self):
-        """ Returns ZipFile instance """
+    def _download_extract_archive(self, url):
+        """ Returns dict with 2 extracted filenames """
         try:
-            archive = urllib2.urlopen(self.SOURCE_URL).read()
-            return ZipFile(archive)
+            temp_dir = tempfile.mkdtemp()
+            archive = ZipFile(urllib2.urlopen(url).read())
+            file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
+            file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
+            return {'cities': file_cities, 'cidr': file_cidr}
         except urllib2.URLError:
             raise
 
-    def _process_cidr_file(self, archive):
-        """ Iterate over ip info and extract useful data """
-        self.incoming['countries'] = set()
-        self.incoming['city_country_mapping'] = {}
-        for line in archive.open(self.CIDR_FILENAME):
-            cidr_info = dict(zip(self.CIDR_FIELDS, line.decode(self.ENCODING).split(self.FIELDS_DELIMITER)))
-            self.incoming['cidr'].update({'start_ip': cidr_info['start_ip'],
-                                          'end_ip': cidr_info['end_ip'],
-                                          'country_id': cidr_info['country_code'],
-                                          'city_id': cidr_info['city_id']})
-            self.incoming['countries'].update({'code': cidr_info['country_code']})
-            self.incoming['city_country_mapping'].update({cidr_info['city_id']: cidr_info['country_code']})
+    def _line_to_dict(self, file, field_names):
+        """ Converts file line into dictonary """
+        for line in file:
+            decoded_line = line.decode(settings.IPGEOBASE_FILE_ENCODING)
+            delimiter = settings.IPGEOBASE_FILE_FIELDS_DELIMITER
+            yield self._extract_data_from_line(decoded_line, field_names, delimiter)
 
-    def _process_cities_file(self, archive):
+    def _extract_data_from_line(self, line, field_names=None, delimiter="\t"):
+        return dict(zip(field_names, line.rstrip('\n').split(delimiter)))
+
+    def _process_cidr_file(self, file):
+        """ Iterate over ip info and extract useful data """
+        data = {'cidr': list(), 'countries': set(), 'city_country_mapping': dict()}
+        for cidr_info in self._line_to_dict(file, field_names=settings.IPGEOBASE_CIDR_FIELDS):
+            data['cidr'].append({'start_ip': cidr_info['start_ip'],
+                                  'end_ip': cidr_info['end_ip'],
+                                  'country_id': cidr_info['country_code'],
+                                  'city_id': cidr_info['city_id']})
+            data['countries'].add(cidr_info['country_code'])
+            if cidr_info['city_id'] != '-':
+                data['city_country_mapping'].update({cidr_info['city_id']: cidr_info['country_code']})
+        return data
+
+    def _process_cities_file(self, file, city_country_mapping):
         """ Iterate over cities info and extract useful data """
-        self.incoming['regions'] = set()
-        self.incoming['cities'] = set()
-        self.incoming['city_region_mapping'] = {}
-        for line in archive.open(self.CITIES_FILENAME):
-            geo_info = dict(zip(self.CITIES_FIELDS, line.decode(self.ENCODING).split(self.FIELDS_DELIMITER)))
-            geo_info['country_code'] = self.incoming['city_country_mapping'][geo_info['city_id']]
-            self.incoming['cities'].update({'region__name': geo_info['region_name'],
-                                            'name': geo_info['city_name'],
-                                            'id': geo_info['city_id']})
-            self.incoming['regions'].update({'name': geo_info['region_name'],
-                                             'country__code': geo_info['country_code']})
+        data = {'regions': list(), 'cities': list(), 'city_region_mapping': dict()}
+        for geo_info in self._line_to_dict(file, field_names=settings.IPGEOBASE_CITIES_FIELDS):
+            geo_info['country_code'] = city_country_mapping[geo_info['city_id']]
+            data['cities'].append({'region__name': geo_info['region_name'],
+                                   'name': geo_info['city_name'],
+                                   'id': geo_info['city_id']})
+            data['regions'].append({'name': geo_info['region_name'],
+                                    'country__code': geo_info['country_code']})
+        return data
 
     def _update_geography(self):
         """ Update database with new countries, regions and cities """
