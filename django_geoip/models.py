@@ -56,6 +56,7 @@ class IpRangeManager(models.Manager):
         except IndexError:
             raise IpRange.DoesNotExist()
 
+
 class IpRange(models.Model):
     """ Ip range borders are stored as long integers
         http://publibn.boulder.ibm.com/doc_link/en_US/a_doc_lib/libs/commtrf2/inet_addr.htm

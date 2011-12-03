@@ -6,7 +6,7 @@ from django_any.models import any_model
 from mock import patch
 import urllib2
 from django_geoip.management.commands.ipgeobase_update import Command
-from django_geoip.models import IpRange
+from django_geoip.models import IpRange, Country, Region, City
 
 class IpRangeTest(TestCase):
 
@@ -20,9 +20,7 @@ class IpRangeTest(TestCase):
         self.assertRaises(IpRange.DoesNotExist, IpRange.objects.by_ip, '127.0.0.1')
         #TODO Test for overlapping ranges
 
-        
-class IpGeoBaseTest(TestCase):
-    maxDiff = None
+class DowloadTest(TestCase):
     IPGEOBASE_ZIP_FILE_PATH = 'tests/tests.zip'
     IPGEOBASE_MOCK_URL = 'http://futurecolors/mock.zip'
 
@@ -43,6 +41,23 @@ class IpGeoBaseTest(TestCase):
     def test_download_exception(self, mock):
         mock.side_effect = urllib2.URLError('Response timeout')
         self.assertRaises(urllib2.URLError, Command()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
+
+
+class ConvertTest(TestCase):
+    def test_convert_fileline_to_dict(self):
+        check_against_dict = {'city_id': u'1',
+                              'city_name': u'Хмельницкий',
+                              'region_name': u'Хмельницкая область',
+                              'district_name': u'Центральная Украина',
+                              'lat': u'49.416668',
+                              'lng': u'27.000000'
+                              }
+
+        command = Command()
+        generator = command._line_to_dict(file=open('tests/cities.txt'),
+                                          field_names=settings.IPGEOBASE_CITIES_FIELDS)
+        result = generator.next()
+        self.assertEqual(result, check_against_dict)
 
     def test_convert_fileline_to_dict(self):
         check_against_dict = {'city_id': u'1',
@@ -76,6 +91,7 @@ class IpGeoBaseTest(TestCase):
         self.assertEqual(cidr_info['countries'], check_against['countries'])
         self.assertEqual(cidr_info['cidr'], check_against['cidr'])
 
+
     def test_process_cities_file(self):
         city_country_mapping = {'1': u'UA', '1057': u'RU', '2176': u'RU'}
 
@@ -84,6 +100,11 @@ class IpGeoBaseTest(TestCase):
                 {'region__name': u'Хмельницкая область', 'name': u'Хмельницкий', 'id': u'1'},
                 {'region__name': u'Кемеровская область', 'name': u'Березовский', 'id': u'1057'},
                 {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион', 'id': u'2176'},
+            ],
+            'regions': [
+                {'name':  u'Хмельницкая область', 'country__code': u'UA'},
+                {'name':  u'Кемеровская область', 'country__code': u'RU'},
+                {'name':  u'Ханты-Мансийский автономный округ', 'country__code': u'RU'},
             ]
         }
 
@@ -91,4 +112,43 @@ class IpGeoBaseTest(TestCase):
         cities_info = command._process_cities_file(open('tests/cities.txt'), city_country_mapping)
 
         self.assertEqual(cities_info['cities'], check_against['cities'])
+        self.assertEqual(cities_info['regions'], check_against['regions'])
 
+
+class IpGeoBaseTest(TestCase):
+
+    def setUp(self):
+        self.countries = {u'FR', u'UA', u'RU'}
+        self.regions = [{'name': u'Хмельницкая область', 'country': u'UA'},
+                {'name': u'Кемеровская область', 'country': u'RU'},
+                {'name': u'Ханты-Мансийский автономный округ', 'country': u'RU'}, ]
+        self.cities = [{'region__name': u'Хмельницкая область', 'name': u'Хмельницкий', 'id': 1},
+                {'region__name': u'Кемеровская область', 'name': u'Березовский', 'id': 1057},
+                {'region__name': u'Кемеровская область', 'name': u'Кемерово', 'id': 1058},
+                {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион', 'id': 2176}, ]
+        City.objects.all().delete()
+        Region.objects.all().delete()
+        Country.objects.all().delete()
+
+    def test_update_geography_empty_data(self):
+        command = Command()
+        cities_info = command._update_geography(self.countries, self.regions, self.cities)
+
+        self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
+        self.assertEqual(list(Region.objects.all().values('name', 'country')), self.regions)
+        self.assertEqual(list(City.objects.all().values('name', 'id', 'region__name')), self.cities)
+
+    def test_update_pre_existing_data(self):
+        self.assertTrue(Country.objects.all().count() == 0)
+        ua = Country.objects.create(name=u'UA', code=u'UA')
+        ru = Country.objects.create(name=u'RU', code=u'RU')
+
+        kemerovo = Region.objects.create(name=u'Кемеровская область', country=ru)
+        City.objects.create(name=u'Березовский', id=1057, region=kemerovo)
+
+        command = Command()
+        cities_info = command._update_geography(self.countries, self.regions, self.cities)
+
+        self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
+        self.assertItemsEqual(list(Region.objects.all().values('name', 'country')), self.regions)
+        self.assertEqual(list(City.objects.all().values('name', 'id', 'region__name')), self.cities)
