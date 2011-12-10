@@ -77,12 +77,12 @@ class ConvertTest(TestCase):
     def test_process_cidr_file(self):
         check_against = {
             'cidr': [
-                {'start_ip': '33554432', 'end_ip': '34603007','country_id': 'FR', 'city_id': '-'},
-                {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '414'},
-                {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2097'},
+                {'start_ip': '33554432', 'end_ip': '34603007','country_id': 'FR', 'city_id': None},
+                {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
+                {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
             ],
             'countries': {u'FR', u'UA', u'RU'},
-            'city_country_mapping': {'2097': u'RU', '414': u'UA'}
+            'city_country_mapping': {'2176': u'RU', '1': u'UA'}
         }
         command = Command()
         cidr_info = command._process_cidr_file(open('tests/cidr_optim.txt'))
@@ -116,6 +116,7 @@ class ConvertTest(TestCase):
 
 
 class IpGeoBaseTest(TestCase):
+    maxDiff = None
 
     def setUp(self):
         self.countries = {u'FR', u'UA', u'RU'}
@@ -126,6 +127,15 @@ class IpGeoBaseTest(TestCase):
                 {'region__name': u'Кемеровская область', 'name': u'Березовский', 'id': 1057},
                 {'region__name': u'Кемеровская область', 'name': u'Кемерово', 'id': 1058},
                 {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион', 'id': 2176}, ]
+        self.cidr = {
+            'cidr': [
+                {'start_ip': '33554432', 'end_ip': '34603007','country_id': 'FR', 'city_id': None},
+                {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
+                {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
+            ],
+            'countries': {u'FR', u'UA', u'RU'},
+            'city_country_mapping': {2176: u'RU', 1058: u'RU', 1057: u'RU', 1: u'UA'}
+        }
         City.objects.all().delete()
         Region.objects.all().delete()
         Country.objects.all().delete()
@@ -152,3 +162,40 @@ class IpGeoBaseTest(TestCase):
         self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
         self.assertItemsEqual(list(Region.objects.all().values('name', 'country')), self.regions)
         self.assertEqual(list(City.objects.all().values('name', 'id', 'region__name')), self.cities)
+
+    def test_build_city_region_mapping(self):
+        check_against_mapping = {
+            1: 1,
+            1057: 2,
+            1058: 2,
+            2176: 3,
+        }
+        for region in self.regions:
+            Region.objects.create(name=region['name'], country_id=region['country'])
+        for city in self.cities:
+            region = Region.objects.get(name=city['region__name'])
+            City.objects.create(id=city['id'], name=city['name'], region=region)
+
+        command = Command()
+        mapping = command._build_city_region_mapping()
+
+        self.assertEqual(mapping, check_against_mapping)
+
+
+    def test_update_cidr(self):
+        check_against_ranges = [
+            {'start_ip': 33554432, 'end_ip': 34603007, 'country_id': 'FR', 'city_id': None, 'region_id': None},
+            {'start_ip': 37249024, 'end_ip': 37251071, 'country_id': 'UA', 'city_id': 1, 'region_id': 1},
+            {'start_ip': 37355520, 'end_ip': 37392639, 'country_id': 'RU', 'city_id': 2176,'region_id': 3},
+        ]
+
+        command = Command()
+        for region in self.regions:
+            Region.objects.create(name=region['name'], country_id=region['country'])
+        for city in self.cities:
+            region = Region.objects.get(name=city['region__name'])
+            City.objects.create(id=city['id'], name=city['name'], region=region)
+        command._update_cidr(self.cidr['cidr'])
+
+        self.assertItemsEqual(IpRange.objects.all().values('start_ip', 'end_ip', 'country_id', 'city_id', 'region_id'),
+            check_against_ranges)

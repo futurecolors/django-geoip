@@ -20,7 +20,7 @@ class Command(BaseCommand):
         self._update_geography(cidr_info['countries'],
                                city_info['regions'],
                                city_info['cities'])
-        self._update_cidr()
+        self._update_cidr(cidr_info)
 
     def _download_extract_archive(self, url):
         """ Returns dict with 2 extracted filenames """
@@ -47,12 +47,13 @@ class Command(BaseCommand):
         """ Iterate over ip info and extract useful data """
         data = {'cidr': list(), 'countries': set(), 'city_country_mapping': dict()}
         for cidr_info in self._line_to_dict(file, field_names=settings.IPGEOBASE_CIDR_FIELDS):
+            city_id = cidr_info['city_id'] if cidr_info['city_id'] != '-' else None
             data['cidr'].append({'start_ip': cidr_info['start_ip'],
-                                  'end_ip': cidr_info['end_ip'],
-                                  'country_id': cidr_info['country_code'],
-                                  'city_id': cidr_info['city_id']})
+                                 'end_ip': cidr_info['end_ip'],
+                                 'country_id': cidr_info['country_code'],
+                                 'city_id': city_id})
             data['countries'].add(cidr_info['country_code'])
-            if cidr_info['city_id'] != '-':
+            if city_id is not None:
                 data['city_country_mapping'].update({cidr_info['city_id']: cidr_info['country_code']})
         return data
 
@@ -86,17 +87,20 @@ class Command(BaseCommand):
                 region = Region.objects.get(name=entry['region__name'])
                 City.objects.create(id=entry['id'], name=entry['name'], region=region)
 
-    def _update_cidr(self):
+    def _update_cidr(self, cidr):
         """ Rebuild IPRegion table with fresh data (old ip ranges are removed for simplicity)"""
-        city_region_mapping = self._build_city_region_mapping()
         IpRange.objects.all().delete()
-        for entry in self.incoming['cidr']:
-            entry.update({'city_id': city_region_mapping[entry['city_id']]})
+        city_region_mapping = self._build_city_region_mapping()
+        for entry in cidr:
+            # skipping for country rows
+            if entry['city_id']:
+                entry.update({'region_id': city_region_mapping[int(entry['city_id'])]})
             IpRange.objects.create(**entry)
 
     def _build_city_region_mapping(self):
-        cities = City.objects.values_list('id', 'region__id')
+        cities = City.objects.values('id', 'region__id')
         city_region_mapping = {}
         for city in cities:
-            city_region_mapping.update({city[0]: city[1]})
+            if city['id']:
+                city_region_mapping.update({city['id']: city['region__id']})
         return city_region_mapping
