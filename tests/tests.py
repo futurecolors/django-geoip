@@ -1,12 +1,22 @@
 # -*- coding: utf-8 -*-
+import sys
 import socket
-from decimal import Decimal
-from django.conf import settings
-from django.test import TestCase
-from django_any.models import any_model
-from mock import patch
 import urllib2
 import struct
+from decimal import Decimal
+try:
+    from unittest2 import TestCase
+except ImportError:
+    if sys.version_info >= (2,7):
+        # unittest2 features are native in Python 2.7
+        from unittest import TestCase
+    else:
+        raise
+
+from mock import patch
+from django.conf import settings
+from django_any.models import any_model
+
 from django_geoip.management.commands.ipgeobase_update import Command
 from django_geoip.models import IpRange, Country, Region, City
 
