@@ -6,7 +6,7 @@ App to figure out where your visitors are from by their IP address.
 Installation
 ------------
 
-This app works with python 2.5-2.7, Django 1.2 and higher.
+This app works with python 2.6-2.7, Django 1.2 and higher.
 
 Recommended way to install is pip::
 
