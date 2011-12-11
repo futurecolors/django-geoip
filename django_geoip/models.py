@@ -45,12 +45,18 @@ class City(models.Model):
         unique_together = (('region', 'name'), )
 
 
+def inet_aton(ip):
+    """ Convert string IP representation to integer
+    """
+    return struct.unpack('!L', socket.inet_aton(ip))[0]
+
+
 class IpRangeManager(models.Manager):
 
     def by_ip(self, ip):
         """ Find the smallest range containing the given IP.
         """
-        number = struct.unpack('!L', socket.inet_aton(ip))[0]
+        number = inet_aton(ip)
         try:
             return super(IpRangeManager, self).get_query_set()\
                                               .filter(start_ip__lte=number, end_ip__gte=number)\

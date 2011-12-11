@@ -1,24 +1,39 @@
 # -*- coding: utf-8 -*-
+import socket
 from unittest import TestCase
 from decimal import Decimal
 from django.conf import settings
 from django_any.models import any_model
 from mock import patch
 import urllib2
+import struct
 from django_geoip.management.commands.ipgeobase_update import Command
 from django_geoip.models import IpRange, Country, Region, City
 
 class IpRangeTest(TestCase):
 
+    def setUp(self):
+        self.range_contains = any_model(IpRange, start_ip=3568355840, end_ip=3568355843)
+        self.range_not_contains = any_model(IpRange, start_ip=3568355844, end_ip=3568355851)
+
     def test_manager(self):
-        range_contains = any_model(IpRange, start_ip=3568355840, end_ip=3568355843)
-        range_not_contains = any_model(IpRange, start_ip=3568355844, end_ip=3568355851)
-
         ip_range = IpRange.objects.by_ip('212.176.202.2')
-        self.assertEqual(ip_range, range_contains)
-
+        self.assertEqual(ip_range, self.range_contains)
         self.assertRaises(IpRange.DoesNotExist, IpRange.objects.by_ip, '127.0.0.1')
-        #TODO Test for overlapping ranges
+
+    def test_relations(self):
+        self.country = any_model(Country)
+        self.region = any_model(Region, country=self.country)
+        self.city = any_model(City, region=self.region)
+        range = any_model(IpRange,
+                          start_ip=struct.unpack('!L', socket.inet_aton('43.123.56.0'))[0],
+                          end_ip=struct.unpack('!L', socket.inet_aton('43.123.56.255'))[0],
+                          city=self.city, region=self.region, country=self.country)
+
+        ip_range = IpRange.objects.by_ip('43.123.56.12')
+        self.assertEqual(ip_range.city, self.city)
+        self.assertEqual(ip_range.city.region, self.region)
+        self.assertEqual(ip_range.city.region.country, self.country)
 
 class DowloadTest(TestCase):
     IPGEOBASE_ZIP_FILE_PATH = 'tests/tests.zip'
