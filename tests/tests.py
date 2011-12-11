@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import socket
-from unittest import TestCase
 from decimal import Decimal
 from django.conf import settings
+from django.test import TestCase
 from django_any.models import any_model
 from mock import patch
 import urllib2
