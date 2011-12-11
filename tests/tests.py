@@ -98,7 +98,7 @@ class ConvertTest(TestCase):
                 {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
                 {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
             ],
-            'countries': {u'FR', u'UA', u'RU'},
+            'countries': set([u'FR', u'UA', u'RU']),
             'city_country_mapping': {'2176': u'RU', '1': u'UA'}
         }
         command = Command()
@@ -139,7 +139,7 @@ class IpGeoBaseTest(TestCase):
     maxDiff = None
 
     def setUp(self):
-        self.countries = {u'FR', u'UA', u'RU'}
+        self.countries = set([u'FR', u'UA', u'RU'])
         self.regions = [{'name': u'Хмельницкая область', 'country': u'UA'},
                 {'name': u'Кемеровская область', 'country': u'RU'},
                 {'name': u'Ханты-Мансийский автономный округ', 'country': u'RU'}, ]
@@ -153,7 +153,7 @@ class IpGeoBaseTest(TestCase):
                 {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
                 {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
             ],
-            'countries': {u'FR', u'UA', u'RU'},
+            'countries': set([u'FR', u'UA', u'RU']),
             'city_country_mapping': {2176: u'RU', 1058: u'RU', 1057: u'RU', 1: u'UA'}
         }
         City.objects.all().delete()
