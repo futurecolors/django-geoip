@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
-from zipfile import ZipFile
+from decimal import Decimal
 from django.conf import settings
 from django_any.models import any_model
 from mock import patch
@@ -44,6 +44,8 @@ class DowloadTest(TestCase):
 
 
 class ConvertTest(TestCase):
+    maxDiff = None
+
     def test_convert_fileline_to_dict(self):
         check_against_dict = {'city_id': u'1',
                               'city_name': u'Хмельницкий',
@@ -64,8 +66,8 @@ class ConvertTest(TestCase):
                               'city_name': u'Хмельницкий',
                               'region_name': u'Хмельницкая область',
                               'district_name': u'Центральная Украина',
-                              'lat': u'49.416668',
-                              'lng': u'27.000000'
+                              'longitude': u'49.416668',
+                              'latitude': u'27.000000'
                               }
 
         command = Command()
@@ -97,9 +99,12 @@ class ConvertTest(TestCase):
 
         check_against = {
             'cities': [
-                {'region__name': u'Хмельницкая область', 'name': u'Хмельницкий', 'id': u'1'},
-                {'region__name': u'Кемеровская область', 'name': u'Березовский', 'id': u'1057'},
-                {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион', 'id': u'2176'},
+                {'region__name': u'Хмельницкая область', 'name': u'Хмельницкий',
+                 'id': u'1', 'longitude': Decimal('49.416668'), 'latitude': Decimal('27.000000')},
+                {'region__name': u'Кемеровская область', 'name': u'Березовский',
+                 'id': u'1057', 'longitude': Decimal('55.572479'), 'latitude': Decimal('86.192734')},
+                {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион',
+                 'id': u'2176', 'longitude': Decimal('61.050400'), 'latitude': Decimal('76.113472')},
             ],
             'regions': [
                 {'name':  u'Хмельницкая область', 'country__code': u'UA'},

@@ -33,6 +33,8 @@ class Region(models.Model):
 class City(models.Model):
     region = models.ForeignKey(Region, related_name='cities')
     name = models.CharField(_('city name'), max_length=255)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
     def __unicode__(self):
         return self.name

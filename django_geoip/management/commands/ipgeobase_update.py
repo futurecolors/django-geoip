@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import tempfile
 from zipfile import ZipFile
+from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import urllib2
@@ -66,7 +67,9 @@ class Command(BaseCommand):
                                     'country__code': geo_info['country_code']})
             data['cities'].append({'region__name': geo_info['region_name'],
                                    'name': geo_info['city_name'],
-                                   'id': geo_info['city_id']})
+                                   'id': geo_info['city_id'],
+                                   'latitude': Decimal(geo_info['latitude']),
+                                   'longitude': Decimal(geo_info['longitude'])})
         return data
 
     def _update_geography(self, countries, regions, cities):
