@@ -4,6 +4,8 @@ import socket
 import urllib2
 import struct
 from decimal import Decimal
+import os
+
 try:
     from unittest2 import TestCase
 except ImportError:
@@ -19,6 +21,8 @@ from django_any.models import any_model
 
 from django_geoip.management.commands.ipgeobase_update import Command
 from django_geoip.models import IpRange, Country, Region, City
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class IpRangeTest(TestCase):
 
@@ -46,13 +50,13 @@ class IpRangeTest(TestCase):
         self.assertEqual(ip_range.city.region.country, self.country)
 
 class DowloadTest(TestCase):
-    IPGEOBASE_ZIP_FILE_PATH = 'tests/tests.zip'
+    IPGEOBASE_ZIP_FILE_PATH = 'tests.zip'
     IPGEOBASE_MOCK_URL = 'http://futurecolors/mock.zip'
 
     @patch('urllib2.urlopen')
     def test_download_unpack(self, mock):
         self.opener = mock.return_value
-        self.opener.read.return_value = open(self.IPGEOBASE_ZIP_FILE_PATH)
+        self.opener.read.return_value = open(os.path.join(BASE_DIR, self.IPGEOBASE_ZIP_FILE_PATH))
 
         result = Command()._download_extract_archive(url=self.IPGEOBASE_MOCK_URL)
 
@@ -81,7 +85,7 @@ class ConvertTest(TestCase):
                               }
 
         command = Command()
-        generator = command._line_to_dict(file=open('tests/cities.txt'),
+        generator = command._line_to_dict(file=open(os.path.join(BASE_DIR, 'cities.txt')),
                                           field_names=settings.IPGEOBASE_CITIES_FIELDS)
         result = generator.next()
         self.assertEqual(result, check_against_dict)
@@ -96,7 +100,7 @@ class ConvertTest(TestCase):
                               }
 
         command = Command()
-        generator = command._line_to_dict(file=open('tests/cities.txt'),
+        generator = command._line_to_dict(file=open(os.path.join(BASE_DIR, 'cities.txt')),
                                           field_names=settings.IPGEOBASE_CITIES_FIELDS)
         result = generator.next()
         self.assertEqual(result, check_against_dict)
@@ -112,7 +116,7 @@ class ConvertTest(TestCase):
             'city_country_mapping': {'2176': u'RU', '1': u'UA'}
         }
         command = Command()
-        cidr_info = command._process_cidr_file(open('tests/cidr_optim.txt'))
+        cidr_info = command._process_cidr_file(open(os.path.join(BASE_DIR, 'cidr_optim.txt')))
 
         self.assertEqual(cidr_info['city_country_mapping'], check_against['city_country_mapping'])
         self.assertEqual(cidr_info['countries'], check_against['countries'])
@@ -139,7 +143,7 @@ class ConvertTest(TestCase):
         }
 
         command = Command()
-        cities_info = command._process_cities_file(open('tests/cities.txt'), city_country_mapping)
+        cities_info = command._process_cities_file(open(os.path.join(BASE_DIR, 'cities.txt')), city_country_mapping)
 
         self.assertEqual(cities_info['cities'], check_against['cities'])
         self.assertEqual(cities_info['regions'], check_against['regions'])
@@ -187,7 +191,7 @@ class IpGeoBaseTest(TestCase):
         City.objects.create(name=u'Березовский', id=1057, region=kemerovo)
 
         command = Command()
-        cities_info = command._update_geography(self.countries, self.regions, self.cities)
+        command._update_geography(self.countries, self.regions, self.cities)
 
         self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
         self.assertItemsEqual(list(Region.objects.all().values('name', 'country')), self.regions)

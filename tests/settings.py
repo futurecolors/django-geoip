@@ -7,7 +7,13 @@ try:
     import django_jenkins
     JENKINS_APP = ('django_jenkins',)
 except ImportError:
-    JENKINS_APP = None
+    JENKINS_APP = tuple()
+
+try:
+    import south
+    SOUTH_APP = ('south',)
+except ImportError:
+    SOUTH_APP = tuple()
 
 DEBUG = True
 DATABASES = {
@@ -19,7 +25,7 @@ DATABASES = {
 INSTALLED_APPS = ('django.contrib.auth',
                  'django.contrib.contenttypes',
                  'django.contrib.sessions',
-                 'django.contrib.admin',) + PROJECT_APPS + JENKINS_APP + ('south',)
+                 'django.contrib.admin',) + PROJECT_APPS + JENKINS_APP + SOUTH_APP
 PROJECT_APPS = PROJECT_APPS
 JENKINS_TASKS = (
     'django_jenkins.tasks.with_coverage',
