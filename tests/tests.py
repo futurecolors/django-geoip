@@ -5,6 +5,11 @@ import urllib2
 import struct
 from decimal import Decimal
 import os
+from django.http import HttpResponse
+from django.test.client import RequestFactory
+from django_any.test import Client
+from django_geoip import get_location, middleware
+from django_geoip.middleware import LocationMiddleware
 
 try:
     from unittest2 import TestCase
@@ -15,7 +20,7 @@ except ImportError:
     else:
         raise
 
-from mock import patch
+from mock import patch, Mock
 from django.conf import settings
 from django_any.models import any_model
 
@@ -233,3 +238,59 @@ class IpGeoBaseTest(TestCase):
 
         self.assertItemsEqual(IpRange.objects.all().values('start_ip', 'end_ip', 'country_id', 'city_id', 'region_id'),
             check_against_ranges)
+
+
+class MiddlewareTest(TestCase):
+    def setUp(self, *args, **kwargs):
+        self.client = Client()
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/', **{'REMOTE_ADDR': '6.6.6.6'})
+        self.middleware = LocationMiddleware()
+
+        self.get_location_patcher = patch.object(middleware, 'get_location')
+        self.get_location_patcher.start()
+        self.get_location_mock = self.get_location_patcher.start()
+
+    def tearDown(self, *args, **kwargs):
+        self.get_location_patcher.stop()
+
+    def test_get_location_lazy(self):
+        self.client.get('/')
+        self.assertEqual(self.get_location_mock.call_count, 0)
+
+    def test_process_request(self):
+        self.get_location_mock.return_value = None
+        self.middleware.process_request(self.request)
+        self.assertEqual(self.request.location, None)
+        self.assertEqual(self.get_location_mock.call_count, 1)
+
+    def test_should_update_cookie_true_empty(self):
+        self.middleware.process_request(self.request)
+        self.assertTrue(self.middleware._should_update_cookie(request=self.request))
+
+    def test_should_update_cookie_false_no_location(self):
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 1
+        request = self.factory.get('/')
+        self.assertFalse(self.middleware._should_update_cookie(request=request))
+
+    def test_should_update_cookie_false_cookie_not_updated(self):
+        self.get_location_mock.return_value = mycity = any_model(City, id=10)
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 10
+        request = self.factory.get('/')
+        self.middleware.process_request(request)
+        self.assertFalse(self.middleware._should_update_cookie(request=request))
+
+    def test_should_update_cookie_true_cookie_obsolete(self):
+        self.get_location_mock.return_value = mycity = any_model(City, id=5)
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 10
+        request = self.factory.get('/')
+        self.middleware.process_request(request)
+        self.assertTrue(self.middleware._should_update_cookie(request=request))
+
+    @patch.object(LocationMiddleware, '_set_cookie')
+    def test_process_response(self, set_cookie_mock):
+        self.get_location_mock.return_value = mycity = any_model(City)
+        base_response = HttpResponse()
+        self.middleware.process_request(self.request)
+        response = self.middleware.process_response(self.request, base_response)
+        set_cookie_mock.assert_called_once_with(mycity.id)
