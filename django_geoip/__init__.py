@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django_geoip.models import IpRange
+from django_geoip.utils import get_class
 
 def get_location(request):
     cached_location = _get_cached_location(request)
@@ -11,11 +12,10 @@ def get_location(request):
 
 def _get_cached_location(request):
     """ Get location from cookie """
-    return None
-    model_class = settings.GEOIP_LOCATION_MODEL
+    model_class = get_class(settings.GEOIP_LOCATION_MODEL)
     location_id = request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
     try:
-        model_class.objects.get(pk=location_id)
+        return model_class.objects.get(pk=location_id)
     except model_class.DoesNotExist:
         return None
 

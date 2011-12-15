@@ -3,20 +3,21 @@ import sys
 import socket
 import urllib2
 import struct
-from decimal import Decimal
 import os
+import django
+import django_geoip
+from decimal import Decimal
 from django.http import HttpResponse
 from django.test.client import RequestFactory
 from django_any.test import Client
 from django_geoip import get_location, middleware
-from django_geoip.middleware import LocationMiddleware
 
 try:
-    from unittest2 import TestCase
+    from unittest2 import TestCase, skipIf
 except ImportError:
     if sys.version_info >= (2,7):
         # unittest2 features are native in Python 2.7
-        from unittest import TestCase
+        from unittest import TestCase, skipIf
     else:
         raise
 
@@ -240,12 +241,13 @@ class IpGeoBaseTest(TestCase):
             check_against_ranges)
 
 
+@skipIf(django.VERSION < (1, 3), "Because RequestFactory is avaliable from 1.3")
 class MiddlewareTest(TestCase):
     def setUp(self, *args, **kwargs):
         self.client = Client()
         self.factory = RequestFactory()
         self.request = self.factory.get('/', **{'REMOTE_ADDR': '6.6.6.6'})
-        self.middleware = LocationMiddleware()
+        self.middleware = django_geoip.middleware.LocationMiddleware()
 
         self.get_location_patcher = patch.object(middleware, 'get_location')
         self.get_location_patcher.start()
@@ -287,10 +289,32 @@ class MiddlewareTest(TestCase):
         self.middleware.process_request(request)
         self.assertTrue(self.middleware._should_update_cookie(request=request))
 
-    @patch.object(LocationMiddleware, '_set_cookie')
+    @patch.object(django_geoip.middleware.LocationMiddleware, '_set_cookie')
     def test_process_response(self, set_cookie_mock):
         self.get_location_mock.return_value = mycity = any_model(City)
         base_response = HttpResponse()
         self.middleware.process_request(self.request)
         response = self.middleware.process_response(self.request, base_response)
         set_cookie_mock.assert_called_once_with(mycity.id)
+
+@skipIf(django.VERSION < (1, 3), "Because RequestFactory is avaliable from 1.3")
+class GetLocation(TestCase):
+
+    def setUp(self, *args, **kwargs):
+        self.client = Client()
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/', **{'REMOTE_ADDR': '6.6.6.6'})
+
+    def tearDown(self, *args, **kwargs):
+        self.get_location_patcher.stop()
+
+    def test_get_cached_location_ok(self):
+        mycity = any_model(City, id=10)
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 10
+        request = self.factory.get('/')
+        self.assertEqual(django_geoip._get_cached_location(request), mycity)
+
+    def test_get_cached_location_none(self):
+        mycity = any_model(City)
+        request = self.factory.get('/')
+        self.assertEqual(django_geoip._get_cached_location(request), None)
