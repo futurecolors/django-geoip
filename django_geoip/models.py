@@ -5,8 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
-from management.commands import ipgeobase_settings
-from django_geoip import geoip_settings
+from django_geoip import ipgeobase_settings, geoip_settings
 
 class Country(models.Model):
     code = models.CharField(_('country code'), max_length=2, primary_key=True)
