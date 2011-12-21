@@ -9,7 +9,10 @@ from unittest2.case import expectedFailure
 import django_geoip
 from decimal import Decimal
 from django.http import HttpResponse
-from django.test.client import RequestFactory
+try:
+    from django.test.client import RequestFactory
+except ImportError:
+    RequestFactory = None
 from django_any.test import Client
 from django_geoip import get_location, middleware
 
@@ -300,7 +303,7 @@ class MiddlewareTest(TestCase):
         response = self.middleware.process_response(self.request, base_response)
         set_cookie_mock.assert_called_once_with(mycity.id)
 
-@skipIf(django.VERSION < (1, 3), "Because RequestFactory is avaliable from 1.3")
+@skipIf(RequestFactory is None, "Because RequestFactory is avaliable from 1.3")
 class GetLocation(TestCase):
 
     def setUp(self, *args, **kwargs):
