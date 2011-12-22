@@ -9,6 +9,8 @@ from unittest2.case import expectedFailure
 import django_geoip
 from decimal import Decimal
 from django.http import HttpResponse
+from models import MyCustomLocation
+
 try:
     from django.test.client import RequestFactory
 except ImportError:
@@ -309,15 +311,20 @@ class GetLocation(TestCase):
     def setUp(self, *args, **kwargs):
         self.client = Client()
         self.factory = RequestFactory()
-        self.request = self.factory.get('/', **{'REMOTE_ADDR': '6.6.6.6'})
 
+        any_model(MyCustomLocation, pk=1, city__name='city1')
+        self.my_location = any_model(MyCustomLocation, id=200, city__name='city200')
+
+    def tearDown(self, *args, **kwargs):
+        City.objects.all().delete()
+
+    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
     def test_get_cached_location_ok(self):
-        mycity = any_model(City, id=10)
-        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 10
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 200
         request = self.factory.get('/')
-        self.assertEqual(django_geoip._get_cached_location(request), mycity)
+        self.assertEqual(django_geoip._get_cached_location(request), self.my_location)
 
+    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
     def test_get_cached_location_none(self):
-        mycity = any_model(City)
         request = self.factory.get('/')
         self.assertEqual(django_geoip._get_cached_location(request), None)

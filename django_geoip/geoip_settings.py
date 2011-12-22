@@ -2,8 +2,14 @@
 from appconf import AppConf
 
 class GeoIpConfig(AppConf):
+    """ GeoIP configuration """
+    # Provide a model that stores geography, specific to your application
+    LOCATION_MODEL = 'django_geoip.models.GeoLocationFascade'
+
+    # Cookie stores location model primary key
     COOKIE_NAME = 'geoip_location_id'
-    LOCATION_MODEL = 'django_geoip.models.City'
+
+    # Cookie lifetime in seconds
     COOKIE_EXPIRES = 9999999999
 
     class Meta:

@@ -4,6 +4,8 @@ from django_geoip.models import IpRange
 from django_geoip.utils import get_class
 
 def get_location(request):
+    """ Find out what is user location (either from his ip or cookie)
+    """
     cached_location = _get_cached_location(request)
     if not cached_location:
         entry = _get_geobase_entry(request)
@@ -19,7 +21,6 @@ def _get_cached_location(request):
     except model_class.DoesNotExist:
         return None
 
-
 def _get_real_ip(request):
     """ Get IP from request """
     try:
@@ -33,7 +34,15 @@ def _get_real_ip(request):
 
 def _get_corresponding_location(ip_range):
     model_class = settings.GEOIP_LOCATION_MODEL
-    return ip_range.city
+    try:
+        model_class.get_by_ip_range(ip_range)
+    except Exception:
+        pass
+    default = model_class.get_default_location()
+    if default:
+        return default
+    else:
+        return ip_range.city
 
 def _get_geobase_entry(request):
     """ Fetches IpRange instance if request IP is found in database """

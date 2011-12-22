@@ -82,3 +82,31 @@ class IpRange(models.Model):
     class Meta:
         verbose_name = _(u'IP range')
         verbose_name_plural = _(u"IP ranges")
+
+
+class GeoLocationFascade(models.Model):
+    """ Interface for creating custom geographic models.
+        Model represents a fascade pattern for concrete GeoIP models.
+    """
+
+    @classmethod
+    def get_by_ip_range(cls, ip_range):
+        """ Return single model instance given an IP range.
+        If no location matches the range, raises DoesNotExist exeption.
+
+        :param ip_range:
+        :type ip_range: IpRange
+        :return: GeoLocationFascade
+        """
+        return NotImplemented
+
+    @classmethod
+    def get_default_location(cls):
+        """ Return default location for cases where ip geolocation fails.
+
+        :return: GeoLocationFascade
+        """
+        return NotImplemented
+
+    class Meta:
+        abstract = True
