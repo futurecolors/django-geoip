@@ -3,7 +3,11 @@ from django.conf import settings
 from django_geoip.models import IpRange
 from django_geoip.utils import get_class
 
-def get_location(request):
+def get_availabe_locations():
+    model_class = get_class(settings.GEOIP_LOCATION_MODEL)
+    return model_class.objects.all()
+
+def get_location_from_request(request):
     """ Find out what is user location (either from his ip or cookie)
     """
     cached_location = _get_cached_location(request)

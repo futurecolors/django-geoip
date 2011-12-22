@@ -4,11 +4,18 @@ from django.conf import settings
 from django.utils.functional import SimpleLazyObject
 
 def get_location(request):
-    from django_geoip import get_location
+    from django_geoip import get_location_from_request
     if not hasattr(request, '_cached_location'):
-        request._cached_location = get_location(request)
+        request._cached_location = get_location_from_request(request)
     return request._cached_location
 
+def check_for_location(location_id):
+    """ Check that location exists """
+    return True
+
+def set_location_cookie(self, response, value):
+    response.set_cookie(settings.GEOIP_COOKIE_NAME, value,
+        expires = datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
 class LocationMiddleware(object):
     def process_request(self, request):
@@ -26,11 +33,7 @@ class LocationMiddleware(object):
             return True
         return False
 
-    def _set_cookie(self, response, value):
-        response.set_cookie(settings.GEOIP_COOKIE_NAME, value,
-            expires = datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
-
     def process_response(self, request, response):
         if self._should_update_cookie(request):
-            self._set_cookie(request.location.id)
+            set_location_cookie(response, request.location.id)
         return response

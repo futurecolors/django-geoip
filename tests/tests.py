@@ -16,7 +16,7 @@ try:
 except ImportError:
     RequestFactory = None
 from django_any.test import Client
-from django_geoip import get_location, middleware
+from django_geoip import get_location_from_request, middleware
 
 try:
     from unittest2 import TestCase, skipIf
@@ -297,13 +297,13 @@ class MiddlewareTest(TestCase):
         self.middleware.process_request(request)
         self.assertTrue(self.middleware._should_update_cookie(request=request))
 
-    @patch.object(django_geoip.middleware.LocationMiddleware, '_set_cookie')
+    @patch.object(django_geoip.middleware, 'set_location_cookie')
     def test_process_response(self, set_cookie_mock):
         self.get_location_mock.return_value = mycity = any_model(City)
         base_response = HttpResponse()
         self.middleware.process_request(self.request)
         response = self.middleware.process_response(self.request, base_response)
-        set_cookie_mock.assert_called_once_with(mycity.id)
+        set_cookie_mock.assert_called_once_with(base_response, mycity.id)
 
 @skipIf(RequestFactory is None, "Because RequestFactory is avaliable from 1.3")
 class GetLocation(TestCase):
