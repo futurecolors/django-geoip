@@ -37,7 +37,7 @@ def _get_real_ip(request):
         return None
 
 def _get_corresponding_location(ip_range):
-    model_class = settings.GEOIP_LOCATION_MODEL
+    model_class = get_class(settings.GEOIP_LOCATION_MODEL)
     try:
         model_class.get_by_ip_range(ip_range)
     except Exception:

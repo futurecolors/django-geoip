@@ -13,7 +13,7 @@ def check_for_location(location_id):
     """ Check that location exists """
     return True
 
-def set_location_cookie(self, response, value):
+def set_location_cookie(response, value):
     response.set_cookie(settings.GEOIP_COOKIE_NAME, value,
         expires = datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
