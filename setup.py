@@ -17,7 +17,7 @@ setup(
     packages=find_packages(exclude=("tests")),
     url='https://github.com/coagulant/django-geoip',
     license='MIT',
-    description="Provides user location in django request object.",
+    description="App to figure out where your visitors are from by their IP address.",
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
     tests_require=tests_require,
     test_suite = "runtests",
