@@ -83,8 +83,8 @@ class IpRange(models.Model):
         Each range might be associated with either country (for IP ranges outside of Russia and Ukraine)
         or country, region and city together.
 
-        Ip range borders are stored as long integers
-        http://publibn.boulder.ibm.com/doc_link/en_US/a_doc_lib/libs/commtrf2/inet_addr.htm
+        Ip range borders are `stored as long integers <http://publibn.boulder.ibm.com/doc_link/en_US/a_doc_lib/libs/commtrf2/inet_addr.htm>`_
+
     """
     start_ip = models.BigIntegerField(_('Ip range block begining, as integer'), db_index=True)
     end_ip = models.BigIntegerField(_('Ip range block ending, as integer'), db_index=True)

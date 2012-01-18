@@ -11,6 +11,11 @@ user's location in your ``request`` object::
         context['location] = request.location
         ...
 
+User location is an instance of a custom model that you're required to create on your own
+(details below).
+
+To avoid unnecessary database hits user location id is stored in a cookie.
+
 Location model
 --------------
 
