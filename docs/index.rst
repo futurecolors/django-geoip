@@ -15,7 +15,9 @@ Contents
 
   installation
   howitworks
+  highlevel
   update
+  reference
   changelog
 
 Development

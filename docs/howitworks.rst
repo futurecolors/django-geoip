@@ -13,43 +13,14 @@ Right now django-geoip supports only ipgeobase geography, which consist of follo
 entities: Country, Region, City. Database maintains normalized relationships between
 all entities, i.e. Country has many Regions, Region has many Cities.
 
+.. automodule:: django_geoip.models
+   :members: Country, Region, City
+
 IP ranges
 ~~~~~~~~~
 
-IP ranges are stored in separate table, one row for each ip range.
-Each range might be associated with either country (for IP ranges outside of Russia and Ukraine)
-or country, region and city together.
-
-
-High-level API usage
---------------------
-
-The app provides a convenient way to detect user location automatically.
-If you've followed advanced installation instructions, you can access
-user's location in your ``request`` object.
-
-Location model
-~~~~~~~~~~~~~~
-
-Location model suites the basic needs for sites with different content for users,
-depending on their location. Ipgeobase forces Country-Region-City location hierarchy, but
-it's usually too general and not sufficient. Site content might depend on city only,
-or vary on custom Regions, that don't match actual geographic regions.
-
-In order to abstract geography from business logic, django-geoip requires a Location model,
-specific to your own app.
-
-Techincal details
-~~~~~~~~~~~~~~~~~~
-
-Create a model, that inherits from ``django_geoip.models.GeoLocationFascade``.
-It should implement following classmethods:
-
-TBD
-
-Switching region
-~~~~~~~~~~~~~~~~
-TBD
+.. automodule:: django_geoip.models
+   :members: IpRange
 
 
 Low-level API usage
