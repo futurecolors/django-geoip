@@ -108,5 +108,13 @@ class GeoLocationFascade(models.Model):
         """
         return NotImplemented
 
+    @classmethod
+    def get_availabe_locations(cls):
+        """ Return all locations available for users to select in frontend
+
+        :return: GeoLocationFascade
+        """
+        return cls.objects.all()
+
     class Meta:
         abstract = True

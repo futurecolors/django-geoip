@@ -66,11 +66,10 @@ class DowloadTest(TestCase):
     IPGEOBASE_ZIP_FILE_PATH = 'tests.zip'
     IPGEOBASE_MOCK_URL = 'http://futurecolors/mock.zip'
 
-    @expectedFailure
     @patch('urllib2.urlopen')
     def test_download_unpack(self, mock):
         self.opener = mock.return_value
-        self.opener.read.return_value = open(os.path.join(BASE_DIR, self.IPGEOBASE_ZIP_FILE_PATH))
+        self.opener.read.return_value = open(os.path.join(BASE_DIR, self.IPGEOBASE_ZIP_FILE_PATH)).read()
 
         result = Command()._download_extract_archive(url=self.IPGEOBASE_MOCK_URL)
 
@@ -249,7 +248,7 @@ class IpGeoBaseTest(TestCase):
             check_against_ranges)
 
 
-@skipIf(django.VERSION < (1, 3), "Because RequestFactory is avaliable from 1.3")
+@skipIf(django.VERSION < (1, 3), "RequestFactory is avaliable from 1.3")
 class MiddlewareTest(TestCase):
     def setUp(self, *args, **kwargs):
         self.client = Client()
@@ -305,7 +304,7 @@ class MiddlewareTest(TestCase):
         response = self.middleware.process_response(self.request, base_response)
         set_cookie_mock.assert_called_once_with(base_response, mycity.id)
 
-@skipIf(RequestFactory is None, "Because RequestFactory is avaliable from 1.3")
+@skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
 class GetLocation(TestCase):
 
     def setUp(self, *args, **kwargs):
