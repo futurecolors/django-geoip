@@ -11,12 +11,12 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 1
+  :maxdepth: 2
 
-    installation
-    howitworks
-    update
-    changelog
+  installation
+  howitworks
+  update
+  changelog
 
 Development
 -----------

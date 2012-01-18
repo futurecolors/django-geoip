@@ -4,7 +4,7 @@ How it works
 Data storage
 ------------
 
-All geoip data, including geograpy and ip-geo mapping is stored in the database.
+All geoip data, including geograpy and geoip mapping is stored in the database.
 
 Geography
 ~~~~~~~~~
@@ -19,6 +19,37 @@ IP ranges
 IP ranges are stored in separate table, one row for each ip range.
 Each range might be associated with either country (for IP ranges outside of Russia and Ukraine)
 or country, region and city together.
+
+
+High-level API usage
+--------------------
+
+The app provides a convenient way to detect user location automatically.
+If you've followed advanced installation instructions, you can access
+user's location in your ``request`` object.
+
+Location model
+~~~~~~~~~~~~~~
+
+Location model suites the basic needs for sites with different content for users,
+depending on their location. Ipgeobase forces Country-Region-City location hierarchy, but
+it's usually too general and not sufficient. Site content might depend on city only,
+or vary on custom Regions, that don't match actual geographic regions.
+
+In order to abstract geography from business logic, django-geoip requires a Location model,
+specific to your own app.
+
+Techincal details
+~~~~~~~~~~~~~~~~~~
+
+Create a model, that inherits from ``django_geoip.models.GeoLocationFascade``.
+It should implement following classmethods:
+
+TBD
+
+Switching region
+~~~~~~~~~~~~~~~~
+TBD
 
 
 Low-level API usage
