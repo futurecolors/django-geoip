@@ -20,7 +20,7 @@ try:
 except ImportError:
     RequestFactory = None
 from django_any.test import Client
-from django_geoip import get_location_from_request, middleware
+from django_geoip import middleware
 
 try:
     from unittest2 import TestCase, skipIf
@@ -326,7 +326,6 @@ class LocationStorageTest(TestCase):
         self.assertTrue(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().startswith(expected))
 
 
-
 @skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
 class GetLocation(TestCase):
 
@@ -344,12 +343,12 @@ class GetLocation(TestCase):
     def test_get_cached_location_ok(self):
         self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 200
         request = self.factory.get('/')
-        self.assertEqual(django_geoip._get_cached_location(request), self.my_location)
+        self.assertEqual(Locator(request)._get_cached_location(), self.my_location)
 
     @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
     def test_get_cached_location_none(self):
         request = self.factory.get('/')
-        self.assertEqual(django_geoip._get_cached_location(request), None)
+        self.assertEqual(Locator(request)._get_cached_location(), None)
 
 
 class UtilsTest(TestCase):
@@ -373,6 +372,7 @@ class UtilsTest(TestCase):
             self.assertEqual(get_class(class_string), expected_class_instance)
 
         self.assertRaises(ImportError, get_class, 'django_geoip.fake')
+
 
 class LocatorTest(TestCase):
     def setUp(self, *args, **kwargs):

@@ -5,9 +5,9 @@ from django.utils.functional import SimpleLazyObject
 from django_geoip.base import LocationStorage
 
 def get_location(request):
-    from django_geoip import get_location_from_request
+    from django_geoip.base import Locator
     if not hasattr(request, '_cached_location'):
-        request._cached_location = get_location_from_request(request)
+        request._cached_location = Locator(request).locate()
     return request._cached_location
 
 def check_for_location(location_id):
