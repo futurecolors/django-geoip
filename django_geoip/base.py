@@ -1,8 +1,43 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django_geoip.models import IpRange
 from django_geoip.utils import get_class
+
+
+class LocationStorage(object):
+    """ Class that deals with saving user location on client's side (cookies)
+    """
+    value = None
+
+    def __init__(self, request, response):
+        self.request = request
+        self.response = response
+
+    def _do_set(self):
+        self.response.set_cookie(
+            key=settings.GEOIP_COOKIE_NAME,
+            value=self.value,
+            expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
+
+    def set(self, value):
+        self.value = value
+        if self._should_update_cookie():
+            self._do_set()
+
+    def _should_update_cookie(self):
+        # process_request never completed, don't need to update cookie
+        if not hasattr(self.request, 'location'):
+            return False
+        # Cookie doesn't exist, we need to store it
+        if settings.GEOIP_COOKIE_NAME not in self.request.COOKIES:
+            return True
+        # Cookie is obsolete, because we've changed it's value during request
+        if str(self.request.COOKIES[settings.GEOIP_COOKIE_NAME]) != str(self.value):
+            return True
+        return False
+
 
 class Locator(object):
     """ A helper class that automates user location detection

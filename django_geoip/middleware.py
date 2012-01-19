@@ -2,6 +2,7 @@
 from datetime import timedelta, datetime
 from django.conf import settings
 from django.utils.functional import SimpleLazyObject
+from django_geoip.base import LocationStorage
 
 def get_location(request):
     from django_geoip import get_location_from_request
@@ -19,21 +20,10 @@ def set_location_cookie(response, value):
 
 class LocationMiddleware(object):
     def process_request(self, request):
+        # Don't detect location, until we request it implicitly
         request.location = SimpleLazyObject(lambda: get_location(request))
 
-    def _should_update_cookie(self, request):
-        # process_request never completed, don't need to update cookie
-        if not hasattr(request, 'location'):
-            return False
-        # Cookie doesn't exist, we need to store it
-        if settings.GEOIP_COOKIE_NAME not in request.COOKIES:
-            return True
-        # Cookie is obsolete, because we've changed it's value during request
-        if str(request.COOKIES[settings.GEOIP_COOKIE_NAME]) != str(request.location.id):
-            return True
-        return False
-
     def process_response(self, request, response):
-        if self._should_update_cookie(request):
-            set_location_cookie(response, request.location.id)
+        storage = LocationStorage(request=request, response=response)
+        storage.set(value=request.location.id)
         return response
