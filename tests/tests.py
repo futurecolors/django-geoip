@@ -5,10 +5,12 @@ import urllib2
 import struct
 import os
 import django
+from django.core.urlresolvers import get_mod_func
 from unittest2.case import expectedFailure
 import django_geoip
 from decimal import Decimal
 from django.http import HttpResponse
+from django_geoip.utils import get_class
 from models import MyCustomLocation
 
 try:
@@ -327,3 +329,29 @@ class GetLocation(TestCase):
     def test_get_cached_location_none(self):
         request = self.factory.get('/')
         self.assertEqual(django_geoip._get_cached_location(request), None)
+
+
+class UtilsTest(TestCase):
+    def test_get_mod_func(self):
+        test_hash = {
+            'django.views.news.stories.story_detail': ('django.views.news.stories', 'story_detail'),
+            'django': ('django', ''),
+        }
+
+        for klass, expected_result in test_hash.items():
+            self.assertEqual(get_mod_func(klass), expected_result)
+
+    @patch('django.contrib.sessions.backends.base.SessionBase')
+    def test_get_class(self, SessionBase):
+        """ FIXME: change to fake class"""
+        test_hash = {
+            'django.contrib.sessions.backends.base.SessionBase': SessionBase,
+        }
+
+        for class_string, expected_class_instance in test_hash.items():
+            self.assertEqual(get_class(class_string), expected_class_instance)
+
+        self.assertRaises(ImportError, get_class, 'django_geoip.fake')
+
+class LocatorTest(TestCase):
+    pass
