@@ -3,6 +3,7 @@ from appconf import AppConf
 
 class GeoIpConfig(AppConf):
     """ GeoIP configuration """
+
     # Provide a model that stores geography, specific to your application
     LOCATION_MODEL = 'django_geoip.models.GeoLocationFascade'
 

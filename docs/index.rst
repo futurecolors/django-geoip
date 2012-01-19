@@ -17,6 +17,7 @@ Contents
   howitworks
   highlevel
   update
+  settings
   reference
   changelog
 

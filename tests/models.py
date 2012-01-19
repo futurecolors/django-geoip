@@ -14,5 +14,9 @@ class MyCustomLocation(GeoLocationFascade):
     def get_default_location(cls):
         return cls.objects.get(pk=1)
 
+    @classmethod
+    def get_available_locations(cls):
+        return cls.objects.all()
+
     def __repr__(self):
         return 'MyCustomLocation(id={0}, city={1})'.format(self.pk, self.city.name)

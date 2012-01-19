@@ -10,6 +10,7 @@ from unittest2.case import expectedFailure
 import django_geoip
 from decimal import Decimal
 from django.http import HttpResponse
+from django_geoip.base import Locator
 from django_geoip.utils import get_class
 from models import MyCustomLocation
 
@@ -35,7 +36,7 @@ from django.conf import settings
 from django_any.models import any_model
 
 from django_geoip.management.commands.ipgeobase_update import Command
-from django_geoip.models import IpRange, Country, Region, City
+from django_geoip.models import IpRange, Country, Region, City, inet_aton
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -354,4 +355,62 @@ class UtilsTest(TestCase):
         self.assertRaises(ImportError, get_class, 'django_geoip.fake')
 
 class LocatorTest(TestCase):
-    pass
+    def setUp(self, *args, **kwargs):
+        self.location_model_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
+        self.location_model = self.location_model_patcher.start()
+
+        self.locator = Locator(RequestFactory().get('/'))
+
+    def tearDown(self):
+        self.location_model_patcher.stop()
+
+    def test_get_cached_location_none(self):
+        self.assertEqual(self.locator._get_cached_location(), None)
+
+        self.locator.request.COOKIES['geoip_location_id'] = 1
+        self.assertEqual(self.locator._get_cached_location(), None)
+
+    def test_get_cached_location_ok(self):
+        location = any_model(MyCustomLocation)
+        self.locator.request.COOKIES['geoip_location_id'] = location.id
+        self.assertEqual(self.locator._get_cached_location(), location)
+
+    @patch('django_geoip.base.Locator._get_real_ip')
+    def test_get_ip_range_none(self, mock_get_ip):
+        mock_get_ip.return_value = '1.2.3.4'
+        self.assertEqual(self.locator._get_ip_range(), None)
+
+    @patch('django_geoip.base.Locator._get_real_ip')
+    @patch('django_geoip.models.IpRange.objects.by_ip')
+    def test_get_ip_range_ok(self, by_ip, mock_get_ip):
+        mock_get_ip.return_value = '1.2.3.4'
+
+        self.assertEqual(self.locator._get_ip_range(), by_ip.return_value)
+        by_ip.assert_called_once_with('1.2.3.4')
+
+    @patch('tests.models.MyCustomLocation.get_by_ip_range')
+    @patch('tests.models.MyCustomLocation.get_default_location')
+    def test_get_corresponding_location_doesnotexists(self, mock_get_default_location, mock_get_by_ip_range):
+        mock_get_by_ip_range.side_effect = MyCustomLocation.DoesNotExist
+        self.locator._get_corresponding_location(range)
+        mock_get_by_ip_range.assert_called_once_with(range)
+        mock_get_default_location.assert_called_once()
+
+    @patch('tests.models.MyCustomLocation.get_by_ip_range')
+    @patch('tests.models.MyCustomLocation.get_default_location')
+    def test_get_corresponding_location_ok(self, mock_get_default_location, mock_get_by_ip_range):
+        range = any_model(IpRange)
+        self.locator._get_corresponding_location(range)
+        mock_get_by_ip_range.assert_called_once_with(range)
+        self.assertFalse(mock_get_default_location.called)
+
+    @patch('django_geoip.base.Locator._get_cached_location')
+    def test_locate_from_cache(self, mock_cached):
+        self.assertEqual(self.locator.locate(), mock_cached.return_value)
+
+    @patch('django_geoip.base.Locator._get_cached_location')
+    @patch('django_geoip.base.Locator._get_ip_range')
+    @patch('django_geoip.base.Locator._get_corresponding_location')
+    def test_locate_from_cache(self, mock_corresponding, mock_get_range, mock_cached):
+        mock_cached.return_value = None
+        self.assertEqual(self.locator.locate(), mock_corresponding.return_value)
