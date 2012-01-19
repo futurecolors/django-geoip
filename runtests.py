@@ -1,13 +1,12 @@
-from django.core.management import execute_manager
-import sys
-from tests import settings
+#!/usr/bin/env python
+import os, sys
 
 if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'test_settings')
+
+    from django.core.management import execute_from_command_line
+
     if len(sys.argv) == 1:
-        sys.argv += ['test', 'tests']
-    execute_manager(settings)
-else:
-    from django.test.simple import DjangoTestSuiteRunner
-    failures = DjangoTestSuiteRunner().run_tests(['tests',])
-    if failures:
-        sys.exit(failures)
+        sys.argv += ['test', 'django_geoip']
+
+    execute_from_command_line(sys.argv)

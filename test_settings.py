@@ -1,6 +1,6 @@
 import os
 
-PROJECT_APPS = ('django_geoip', 'tests')
+PROJECT_APPS = ('django_geoip', 'test_app')
 ROOT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 try:
@@ -34,4 +34,4 @@ JENKINS_TASKS = (
     'django_jenkins.tasks.run_pylint',
 )
 PYLINT_RCFILE = os.path.join(ROOT_PATH, 'tests', 'pylint.rc')
-ROOT_URLCONF = 'tests.urls'
+ROOT_URLCONF = 'test_app.urls'
