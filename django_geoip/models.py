@@ -126,7 +126,7 @@ class GeoLocationFascade(models.Model):
         return NotImplemented
 
     @classmethod
-    def get_availabe_locations(cls):
+    def get_available_locations(cls):
         """
         Return all locations available for users to select in frontend
 
