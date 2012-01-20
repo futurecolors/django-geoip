@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 # keep imports
 from django_geoip import ipgeobase_settings, geoip_settings
 
+
 class Country(models.Model):
     """ One country per row, contains country code and country name (TBD, #2)
     """
