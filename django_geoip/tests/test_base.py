@@ -4,8 +4,9 @@ from django.conf import settings
 from django.http import HttpResponse
 
 from django_any.models import any_model
-from django_geoip.base import LocationStorage, Locator
+from django_geoip.base import  Locator
 from django_geoip.models import IpRange
+from django_geoip.storage import LocationCookieStorage
 from django_geoip.tests import RequestFactory, unittest
 from test_app.models import MyCustomLocation
 
@@ -13,43 +14,43 @@ from mock import patch, Mock
 
 
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-class LocationStorageTest(unittest.TestCase):
+class LocationCookieStorageTest(unittest.TestCase):
 
     def setUp(self, *args, **kwargs):
         self.request = RequestFactory().get('/')
         self.request.location = Mock()
 
     def test_should_not_update_cookie_if_no_location_in_request(self):
-        storage = LocationStorage(request=RequestFactory().get('/'), response=HttpResponse())
+        storage = LocationCookieStorage(request=RequestFactory().get('/'), response=HttpResponse())
         self.assertFalse(storage._should_update_cookie())
 
     def test_should_update_cookie_if_cookie_doesnt_exist(self):
-        storage = LocationStorage(request=self.request, response=HttpResponse())
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertTrue(storage._should_update_cookie())
 
     def test_should_not_update_cookie_if_cookie_is_fresh(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 10
-        storage = LocationStorage(request=self.request, response=HttpResponse())
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         storage.value = 10
         self.assertFalse(storage._should_update_cookie())
 
     def test_should_not_update_cookie_if_cookie_is_none(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = None
-        storage = LocationStorage(request=self.request, response=HttpResponse())
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         storage.value = None
         self.assertFalse(storage._should_update_cookie())
 
     def test_should_update_cookie_if_cookie_is_obsolete(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 42
-        storage = LocationStorage(request=self.request, response=HttpResponse())
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         storage.value = 10
         self.assertTrue(storage._should_update_cookie())
 
-    @patch('django_geoip.base.datetime')
+    @patch('django_geoip.storage.datetime')
     def test_do_set(self, mock):
         mock.now.return_value = datetime(2012, 1, 1, 0, 0, 0)
         base_response = HttpResponse()
-        storage = LocationStorage(request=self.request, response=base_response)
+        storage = LocationCookieStorage(request=self.request, response=base_response)
         storage._do_set(10)
         expected = 'Set-Cookie: geoip_location_id=10; expires=Tue, 20-Nov-2328 17:46:39 GMT;'
         self.assertTrue(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().startswith(expected))

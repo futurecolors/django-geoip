@@ -1,53 +1,15 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.functional import SimpleLazyObject
 from django_geoip.models import IpRange
 from django_geoip.utils import get_class
 
 
-class LocationStorage(object):
-    """ Class that deals with saving user location on client's side (cookies)
-    """
-    value = None
+location_model = SimpleLazyObject(
+    lambda: get_class(settings.GEOIP_LOCATION_MODEL))
 
-    def __init__(self, request, response):
-        self.request = request
-        self.response = response
-        self.value = self.get()
-
-    def get(self):
-        return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
-
-    def set(self, location=None, force=False):
-        if not self._validate_location(location):
-            raise ValueError
-        self.value = location.id
-        if force or self._should_update_cookie():
-            self._do_set(self.value)
-
-    def _do_set(self, value):
-        self.response.set_cookie(
-            key=settings.GEOIP_COOKIE_NAME,
-            value=value,
-            expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
-
-    def _validate_location(self, location):
-        if location is None:
-            return False
-        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location.id).exists()
-
-    def _should_update_cookie(self):
-        # process_request never completed, don't need to update cookie
-        if not hasattr(self.request, 'location'):
-            return False
-        # Cookie doesn't exist, we need to store it
-        if settings.GEOIP_COOKIE_NAME not in self.request.COOKIES:
-            return True
-        # Cookie is obsolete, because we've changed it's value during request
-        if str(self.get()) != str(self.value):
-            return True
-        return False
+storage_class = get_class(settings.GEOIP_STORAGE_CLASS)
 
 
 class Locator(object):
@@ -55,7 +17,6 @@ class Locator(object):
     """
 
     def __init__(self, request):
-        self.location_model = get_class(settings.GEOIP_LOCATION_MODEL)
         self.request = request
 
     def locate(self):
@@ -78,9 +39,9 @@ class Locator(object):
         :return: Custom location model
         """
         try:
-            return self.location_model.get_by_ip_range(ip_range)
+            return location_model.get_by_ip_range(ip_range)
         except ObjectDoesNotExist:
-            return self.location_model.get_default_location()
+            return location_model.get_default_location()
 
     def _get_real_ip(self):
         """
@@ -122,12 +83,12 @@ class Locator(object):
         :type request: HttpRequest
         :return: Custom location model
         """
-        location_storage = LocationStorage(request=self.request, response=None)
+        location_storage = storage_class(request=self.request, response=None)
         location_id = location_storage.get()
 
         if location_id:
             try:
-                return self.location_model.objects.get(pk=location_id)
+                return location_model.objects.get(pk=location_id)
             except ObjectDoesNotExist:
                 pass
         return None

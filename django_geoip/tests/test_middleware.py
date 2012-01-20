@@ -6,8 +6,9 @@ from django_any.models import any_model
 from django_any.test import Client
 from mock import patch
 import django_geoip
-from django_geoip.base import LocationStorage, Locator
+from django_geoip.base import  Locator
 from django_geoip.models import City
+from django_geoip.storage import LocationCookieStorage
 from django_geoip.tests import unittest
 from test_app.models import MyCustomLocation
 
@@ -41,8 +42,8 @@ class MiddlewareTest(unittest.TestCase):
         self.assertEqual(self.request.location, None)
         self.assertEqual(self.get_location_mock.call_count, 1)
 
-    @patch('django_geoip.base.LocationStorage.set')
-    @patch.object(LocationStorage, '__init__')
+    @patch('django_geoip.storage.LocationCookieStorage.set')
+    @patch.object(LocationCookieStorage, '__init__')
     def test_process_response(self, mock, mock_location_set):
         mock.return_value = None
         base_response = HttpResponse()
@@ -53,7 +54,7 @@ class MiddlewareTest(unittest.TestCase):
         # workaround simplelazyobject
         self.assertEqual(str(mycity), str(mock_location_set.call_args[1]['location']))
 
-    @patch('django_geoip.base.LocationStorage._do_set')
+    @patch('django_geoip.storage.LocationCookieStorage._do_set')
     def test_process_response_empty_request_location(self, mock_do_set):
         base_response = HttpResponse()
         self.request.location = None

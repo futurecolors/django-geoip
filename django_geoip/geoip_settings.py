@@ -7,6 +7,8 @@ class GeoIpConfig(AppConf):
     # Provide a model that stores geography, specific to your application
     LOCATION_MODEL = 'django_geoip.models.GeoLocationFascade'
 
+    STORAGE_CLASS = 'django_geoip.storage.LocationCookieStorage'
+
     # Cookie stores location model primary key
     COOKIE_NAME = 'geoip_location_id'
 
