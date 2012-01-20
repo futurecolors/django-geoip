@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-import django
 from django.conf import settings
 from django_geoip import middleware
 from django.http import HttpResponse
-from django.test.client import RequestFactory
 from django_any.models import any_model
 from django_any.test import Client
 from mock import patch
-from unittest2.case import TestCase, skipIf
 import django_geoip
 from django_geoip.base import LocationStorage, Locator
 from django_geoip.models import City
+from django_geoip.tests import unittest
 from test_app.models import MyCustomLocation
 
+try:
+    from django.test.client import RequestFactory
+except ImportError:
+    RequestFactory = None
 
-@skipIf(django.VERSION < (1, 3), "RequestFactory is avaliable from 1.3")
-class MiddlewareTest(TestCase):
+@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
+class MiddlewareTest(unittest.TestCase):
     def setUp(self, *args, **kwargs):
         self.client = Client()
         self.factory = RequestFactory()
@@ -51,26 +53,26 @@ class MiddlewareTest(TestCase):
         mock_location_set.assert_called_once_with(value=mycity.id)
 
 
-#@skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-#class GetLocationTest(TestCase):
-#
-#    def setUp(self, *args, **kwargs):
-#        self.client = Client()
-#        self.factory = RequestFactory()
-#
-#        any_model(MyCustomLocation, pk=1, city__name='city1')
-#        self.my_location = any_model(MyCustomLocation, id=200, city__name='city200')
-#
-#    def tearDown(self, *args, **kwargs):
-#        City.objects.all().delete()
-#
-#    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
-#    def test_get_cached_location_ok(self):
-#        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 200
-#        request = self.factory.get('/')
-#        self.assertEqual(Locator(request)._get_cached_location(), self.my_location)
-#
-#    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'tests.models.MyCustomLocation')
-#    def test_get_cached_location_none(self):
-#        request = self.factory.get('/')
-#        self.assertEqual(Locator(request)._get_cached_location(), None)
+@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
+class GetLocationTest(unittest.TestCase):
+
+    def setUp(self, *args, **kwargs):
+        self.client = Client()
+        self.factory = RequestFactory()
+
+        any_model(MyCustomLocation, pk=1, city__name='city1')
+        self.my_location = any_model(MyCustomLocation, id=200, city__name='city200')
+
+    def tearDown(self, *args, **kwargs):
+        City.objects.all().delete()
+
+    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
+    def test_get_cached_location_ok(self):
+        self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 200
+        request = self.factory.get('/')
+        self.assertEqual(Locator(request)._get_cached_location(), self.my_location)
+
+    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
+    def test_get_cached_location_none(self):
+        request = self.factory.get('/')
+        self.assertEqual(Locator(request)._get_cached_location(), None)

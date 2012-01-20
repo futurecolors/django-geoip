@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import struct
 import socket
-from unittest import TestCase
 from django_any.models import any_model
 from django_geoip.models import IpRange, Region, Country, City
+from django_geoip.tests import unittest
 
-class IpRangeTest(TestCase):
+class IpRangeTest(unittest.TestCase):
 
     def setUp(self):
         self.range_contains = any_model(IpRange, start_ip=3568355840, end_ip=3568355843)

@@ -2,26 +2,18 @@
 from datetime import datetime
 from django.conf import settings
 from django.http import HttpResponse
-from django.test.client import RequestFactory
+
 from django_any.models import any_model
 from django_geoip.base import LocationStorage, Locator
 from django_geoip.models import IpRange
+from django_geoip.tests import RequestFactory, unittest
 from test_app.models import MyCustomLocation
 
-try:
-    from unittest2 import TestCase, skipIf
-except ImportError:
-    if sys.version_info >= (2,7):
-        # unittest2 features are native in Python 2.7
-        from unittest import TestCase, skipIf
-        from unittest.case import expectedFailure
-    else:
-        raise
 from mock import patch, Mock
 
 
-@skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-class LocationStorageTest(TestCase):
+@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
+class LocationStorageTest(unittest.TestCase):
 
     def setUp(self, *args, **kwargs):
         self.request = RequestFactory().get('/')
@@ -63,8 +55,8 @@ class LocationStorageTest(TestCase):
         self.assertTrue(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().startswith(expected))
 
 
-@skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-class LocatorTest(TestCase):
+@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
+class LocatorTest(unittest.TestCase):
     def setUp(self, *args, **kwargs):
         self.location_model_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
         self.location_model = self.location_model_patcher.start()
