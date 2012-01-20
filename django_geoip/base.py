@@ -19,12 +19,12 @@ class LocationStorage(object):
     def get(self):
         return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
 
-    def set(self, value, force=False):
-        if not self._validate_location(value):
+    def set(self, location=None, force=False):
+        if not self._validate_location(location):
             raise ValueError
-        self.value = value
+        self.value = location.id
         if force or self._should_update_cookie():
-            self._do_set(value)
+            self._do_set(self.value)
 
     def _do_set(self, value):
         self.response.set_cookie(
@@ -32,8 +32,10 @@ class LocationStorage(object):
             value=value,
             expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
-    def _validate_location(self, location_id):
-        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location_id).exists()
+    def _validate_location(self, location):
+        if location is None:
+            return False
+        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location.id).exists()
 
     def _should_update_cookie(self):
         # process_request never completed, don't need to update cookie

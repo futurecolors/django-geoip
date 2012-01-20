@@ -113,7 +113,7 @@ class GeoLocationFascade(models.Model):
 
         :param ip_range: User's IpRange to search for.
         :type ip_range: IpRange
-        :return: GeoLocationFascade
+        :return: GeoLocationFascade single object
         """
         return NotImplemented
 

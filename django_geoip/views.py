@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import http
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django_geoip.base import LocationStorage
+from django_geoip.utils import get_class
 
 def set_location(request):
     """
@@ -23,7 +26,8 @@ def set_location(request):
         location_id = request.POST.get('location_id', None)
         if location_id:
             try:
-                LocationStorage(request=request, response=response).set(location_id, force=True)
-            except ValueError:
+                location = get_class(settings.GEOIP_LOCATION_MODEL).objects.get(pk=location_id)
+                LocationStorage(request=request, response=response).set(location=location, force=True)
+            except (ValueError, ObjectDoesNotExist):
                 pass
     return response

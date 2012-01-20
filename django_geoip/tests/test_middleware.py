@@ -28,7 +28,7 @@ class MiddlewareTest(unittest.TestCase):
         self.get_location_patcher.start()
         self.get_location_mock = self.get_location_patcher.start()
 
-    def tearDown(self, *args, **kwargs):
+    def tearDown(self):
         self.get_location_patcher.stop()
 
     def test_get_location_lazy(self):
@@ -50,7 +50,15 @@ class MiddlewareTest(unittest.TestCase):
         self.middleware.process_request(self.request)
         self.middleware.process_response(self.request, base_response)
         mock.assert_called_once_with(request=self.request, response=base_response)
-        mock_location_set.assert_called_once_with(value=mycity.id)
+        # workaround simplelazyobject
+        self.assertEqual(str(mycity), str(mock_location_set.call_args[1]['location']))
+
+    @patch('django_geoip.base.LocationStorage._do_set')
+    def test_process_response_empty_request_location(self, mock_do_set):
+        base_response = HttpResponse()
+        self.request.location = None
+        self.middleware.process_response(self.request, base_response)
+        self.assertFalse(mock_do_set.called)
 
 
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")

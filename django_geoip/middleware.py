@@ -16,7 +16,7 @@ class LocationMiddleware(object):
     def process_response(self, request, response):
         storage = LocationStorage(request=request, response=response)
         try:
-            storage.set(value=request.location.id)
+            storage.set(location=request.location)
         except ValueError:
             # bad location_id
             pass
