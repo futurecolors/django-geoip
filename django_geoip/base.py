@@ -63,7 +63,7 @@ class Locator(object):
 
         :return: Custom location model
         """
-        cached_location = self._get_cached_location()
+        cached_location = self._get_stored_location()
         if not cached_location:
             ip_range = self._get_ip_range()
             cached_location = self._get_corresponding_location(ip_range)
@@ -115,7 +115,7 @@ class Locator(object):
             geobase_entry = None
         return geobase_entry
 
-    def _get_cached_location(self):
+    def _get_stored_location(self):
         """ Get location from cookie
 
         :param request: A ususal request object

@@ -66,16 +66,16 @@ class LocatorTest(unittest.TestCase):
     def tearDown(self):
         self.location_model_patcher.stop()
 
-    def test_get_cached_location_none(self):
-        self.assertEqual(self.locator._get_cached_location(), None)
+    def test_get_stored_location_none(self):
+        self.assertEqual(self.locator._get_stored_location(), None)
 
         self.locator.request.COOKIES['geoip_location_id'] = 1
-        self.assertEqual(self.locator._get_cached_location(), None)
+        self.assertEqual(self.locator._get_stored_location(), None)
 
-    def test_get_cached_location_ok(self):
+    def test_get_stored_location_ok(self):
         location = any_model(MyCustomLocation)
         self.locator.request.COOKIES['geoip_location_id'] = location.id
-        self.assertEqual(self.locator._get_cached_location(), location)
+        self.assertEqual(self.locator._get_stored_location(), location)
 
     @patch('django_geoip.base.Locator._get_real_ip')
     def test_get_ip_range_none(self, mock_get_ip):
@@ -106,12 +106,12 @@ class LocatorTest(unittest.TestCase):
         mock_get_by_ip_range.assert_called_once_with(range)
         self.assertFalse(mock_get_default_location.called)
 
-    @patch('django_geoip.base.Locator._get_cached_location')
-    def test_locate_from_cache(self, mock_cached):
-        self.assertEqual(self.locator.locate(), mock_cached.return_value)
+    @patch('django_geoip.base.Locator._get_stored_location')
+    def test_locate_from_stored(self, mock_stored):
+        self.assertEqual(self.locator.locate(), mock_stored.return_value)
 
-    @patch('django_geoip.base.Locator._get_cached_location')
+    @patch('django_geoip.base.Locator._get_stored_location')
     @patch('django_geoip.base.Locator._get_corresponding_location')
-    def test_locate_not_cached(self, mock_corresponding, mock_cached):
-        mock_cached.return_value = None
+    def test_locate_not_stored(self, mock_corresponding, mock_stored):
+        mock_stored.return_value = None
         self.assertEqual(self.locator.locate(), mock_corresponding.return_value)

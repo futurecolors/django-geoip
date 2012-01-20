@@ -75,12 +75,12 @@ class GetLocationTest(unittest.TestCase):
         City.objects.all().delete()
 
     @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
-    def test_get_cached_location_ok(self):
+    def test_get_stored_location_ok(self):
         self.factory.cookies[settings.GEOIP_COOKIE_NAME] = 200
         request = self.factory.get('/')
-        self.assertEqual(Locator(request)._get_cached_location(), self.my_location)
+        self.assertEqual(Locator(request)._get_stored_location(), self.my_location)
 
     @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
-    def test_get_cached_location_none(self):
+    def test_get_stored_location_none(self):
         request = self.factory.get('/')
-        self.assertEqual(Locator(request)._get_cached_location(), None)
+        self.assertEqual(Locator(request)._get_stored_location(), None)
