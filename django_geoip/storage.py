@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from exceptions import ValueError
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django_geoip.utils import get_class
 
 
@@ -26,6 +27,9 @@ class BaseLocationStorage(object):
             return False
         return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location.id).exists()
 
+    def _get_by_id(self, location_id):
+        return get_class(settings.GEOIP_LOCATION_MODEL).objects.get(pk=location_id)
+
 
 class LocationDummyStorage(BaseLocationStorage):
     """ Fake storage for debug or when location doesn't neet to be stored
@@ -43,7 +47,14 @@ class LocationCookieStorage(BaseLocationStorage):
     """
 
     def get(self):
-        return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+        location_id = self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+
+        if location_id:
+            try:
+                return self._get_by_id(location_id)
+            except ObjectDoesNotExist:
+                pass
+        return None
 
     def set(self, location=None, force=False):
         if not self._validate_location(location):

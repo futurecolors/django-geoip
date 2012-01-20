@@ -84,12 +84,5 @@ class Locator(object):
         :return: Custom location model
         """
         location_storage = storage_class(request=self.request, response=None)
-        location_id = location_storage.get()
-
-        if location_id:
-            try:
-                return location_model.objects.get(pk=location_id)
-            except ObjectDoesNotExist:
-                pass
-        return None
+        return location_storage.get()
 
