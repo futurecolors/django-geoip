@@ -58,8 +58,7 @@ class LocationStorageTest(TestCase):
         mock.now.return_value = datetime(2012, 1, 1, 0, 0, 0)
         base_response = HttpResponse()
         storage = LocationStorage(request=self.request, response=base_response)
-        storage.value = 10
-        storage._do_set()
+        storage._do_set(10)
         expected = 'Set-Cookie: geoip_location_id=10; expires=Tue, 20-Nov-2328 17:46:39 GMT;'
         self.assertTrue(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().startswith(expected))
 

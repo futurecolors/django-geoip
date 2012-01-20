@@ -14,17 +14,26 @@ class LocationStorage(object):
     def __init__(self, request, response):
         self.request = request
         self.response = response
+        self.value = self.get()
 
-    def _do_set(self):
+    def get(self):
+        return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+
+    def set(self, value, force=False):
+        if not self._validate_location(value):
+            raise ValueError
+        self.value = value
+        if force or self._should_update_cookie():
+            self._do_set(value)
+
+    def _do_set(self, value):
         self.response.set_cookie(
             key=settings.GEOIP_COOKIE_NAME,
-            value=self.value,
+            value=value,
             expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
-    def set(self, value):
-        self.value = value
-        if self._should_update_cookie():
-            self._do_set()
+    def _validate_location(self, location_id):
+        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location_id).exists()
 
     def _should_update_cookie(self):
         # process_request never completed, don't need to update cookie
@@ -34,7 +43,7 @@ class LocationStorage(object):
         if settings.GEOIP_COOKIE_NAME not in self.request.COOKIES:
             return True
         # Cookie is obsolete, because we've changed it's value during request
-        if str(self.request.COOKIES[settings.GEOIP_COOKIE_NAME]) != str(self.value):
+        if str(self.get()) != str(self.value):
             return True
         return False
 
@@ -111,7 +120,8 @@ class Locator(object):
         :type request: HttpRequest
         :return: Custom location model
         """
-        location_id = self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+        location_storage = LocationStorage(request=self.request, response=None)
+        location_id = location_storage.get()
 
         if location_id:
             try:

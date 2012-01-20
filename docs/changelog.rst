@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2 (2012-01-19)
+0.2 (2012-01-20)
 ------------------
 
 * Major refactoring of the app, added more tests

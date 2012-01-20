@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import http
-from django_geoip.middleware import set_location_cookie, check_for_location
+from django_geoip.base import LocationStorage
 
 def set_location(request):
     """
@@ -20,7 +20,10 @@ def set_location(request):
         next = '/'
     response = http.HttpResponseRedirect(next)
     if request.method == 'POST':
-        location_id = request.POST.get('location', None)
-        if location_id and check_for_location(location_id):
-            set_location_cookie(response, location_id)
+        location_id = request.POST.get('location_id', None)
+        if location_id:
+            try:
+                LocationStorage(request=request, response=response).set(location_id, force=True)
+            except ValueError:
+                pass
     return response
