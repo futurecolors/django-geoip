@@ -6,6 +6,7 @@ Changelog
 
 * Fixed middleware behavior when request.location is None
 * Added ``GEOIP_STORAGE_CLASS`` setting to override default user location storage
+* Introduced ``LocationDummyStorage`` class to avoid cookie storage
 
 
 0.2 (2012-01-20)
@@ -18,4 +19,4 @@ Changelog
 0.1 (2012-01-18)
 ----------------
 
-* Inital release
+* Initial release

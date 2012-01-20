@@ -5,8 +5,8 @@ from django.conf import settings
 from django_geoip.utils import get_class
 
 
-class LocationCookieStorage(object):
-    """ Class that deals with saving user location on client's side (cookies)
+class BaseLocationStorage(object):
+    """ Base class for user location storage
     """
     value = None
 
@@ -14,6 +14,33 @@ class LocationCookieStorage(object):
         self.request = request
         self.response = response
         self.value = self.get()
+
+    def get(self):
+        raise NotImplemented
+
+    def set(self, location=None, force=False):
+        raise NotImplemented
+
+    def _validate_location(self, location):
+        if location is None:
+            return False
+        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location.id).exists()
+
+
+class LocationDummyStorage(BaseLocationStorage):
+    """ Fake storage for debug or when location doesn't neet to be stored
+    """
+
+    def get(self):
+        return getattr(self.request, 'location', None)
+
+    def set(self, location=None, force=False):
+        return self.get()
+
+
+class LocationCookieStorage(BaseLocationStorage):
+    """ Class that deals with saving user location on client's side (cookies)
+    """
 
     def get(self):
         return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
@@ -30,11 +57,6 @@ class LocationCookieStorage(object):
             key=settings.GEOIP_COOKIE_NAME,
             value=value,
             expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
-
-    def _validate_location(self, location):
-        if location is None:
-            return False
-        return get_class(settings.GEOIP_LOCATION_MODEL).objects.filter(pk=location.id).exists()
 
     def _should_update_cookie(self):
         # process_request never completed, don't need to update cookie
