@@ -30,6 +30,14 @@ class Locator(object):
             stored_location = self._get_corresponding_location(ip_range)
         return stored_location
 
+    def is_store_empty(self):
+        """
+        Check whether user location will be detected by ip or fetched from storage.
+
+        Useful for integration with django-hosts.
+        """
+        return self._get_stored_location() is None
+
     def _get_corresponding_location(self, ip_range):
         """
         Get user location by IP range, if no location matches, returns default location.

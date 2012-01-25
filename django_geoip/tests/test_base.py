@@ -7,7 +7,7 @@ from django_geoip.models import IpRange
 from django_geoip.tests import RequestFactory, unittest
 from test_app.models import MyCustomLocation
 
-from mock import patch
+from mock import patch, Mock
 
 
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
@@ -45,12 +45,29 @@ class LocatorTest(unittest.TestCase):
         self.assertEqual(self.locator._get_ip_range(), by_ip.return_value)
         by_ip.assert_called_once_with('1.2.3.4')
 
+    @patch('django_geoip.base.Locator._get_stored_location')
+    def test_is_store_empty(self, mock_get_stored):
+        mock_get_stored.return_value = None
+        self.assertTrue(self.locator.is_store_empty())
+        mock_get_stored.return_value = 1
+        self.assertFalse(self.locator.is_store_empty())
+
     @patch('test_app.models.MyCustomLocation.get_by_ip_range')
     @patch('test_app.models.MyCustomLocation.get_default_location')
     def test_get_corresponding_location_doesnotexists(self, mock_get_default_location, mock_get_by_ip_range):
         mock_get_by_ip_range.side_effect = MyCustomLocation.DoesNotExist
-        self.locator._get_corresponding_location(range)
-        mock_get_by_ip_range.assert_called_once_with(range)
+        ip_range = Mock()
+        self.locator._get_corresponding_location(ip_range)
+        mock_get_by_ip_range.assert_called_once_with(ip_range)
+        mock_get_default_location.assert_called_once()
+
+    @patch('test_app.models.MyCustomLocation.get_by_ip_range')
+    @patch('test_app.models.MyCustomLocation.get_default_location')
+    def test_get_corresponding_location_exception(self, mock_get_default_location, mock_get_by_ip_range):
+        mock_get_by_ip_range.side_effect = None
+        ip_range = Mock()
+        self.locator._get_corresponding_location(ip_range)
+        mock_get_by_ip_range.assert_called_once_with(ip_range)
         mock_get_default_location.assert_called_once()
 
     @patch('test_app.models.MyCustomLocation.get_by_ip_range')
