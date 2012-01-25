@@ -4,7 +4,7 @@ from django_geoip import middleware
 from django.http import HttpResponse
 from django_any.models import any_model
 from django_any.test import Client
-from mock import patch
+from mock import patch, Mock
 import django_geoip
 from django_geoip.base import  Locator
 from django_geoip.models import City
@@ -44,7 +44,7 @@ class MiddlewareTest(unittest.TestCase):
 
     @patch('django_geoip.storage.LocationCookieStorage.set')
     @patch.object(LocationCookieStorage, '__init__')
-    def test_process_response(self, mock, mock_location_set):
+    def test_process_response_ok(self, mock, mock_location_set):
         mock.return_value = None
         base_response = HttpResponse()
         self.get_location_mock.return_value = mycity = any_model(City)
@@ -60,6 +60,12 @@ class MiddlewareTest(unittest.TestCase):
         self.request.location = None
         self.middleware.process_response(self.request, base_response)
         self.assertFalse(mock_do_set.called)
+
+    @patch('django_geoip.storage.LocationCookieStorage.set')
+    def test_process_response_no_request_location(self, mock_set):
+        base_response = HttpResponse()
+        self.middleware.process_response(self.request, base_response)
+        self.assertFalse(mock_set.called)
 
 
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")

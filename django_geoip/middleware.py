@@ -17,6 +17,10 @@ class LocationMiddleware(object):
         request.location = SimpleLazyObject(lambda: get_location(request))
 
     def process_response(self, request, response):
+        # Do nothing, if process_request never completed (redirect)
+        if not hasattr(request, 'location'):
+            return response
+
         storage = storage_class(request=request, response=response)
         try:
             storage.set(location=request.location)

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.2 (2012-01-25)
+------------------
+
+* Fixed middleware behavior when preocess_request never ran (redirects)
+
+
 0.2.1 (2012-01-25)
 ------------------
 
