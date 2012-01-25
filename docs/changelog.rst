@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 * Fixed middleware behavior when preocess_request never ran (redirects)
+* Improved location storage validation, fixed cookie domain detection
+* Added ``Locator.is_store_empty`` function to reveal if geoip detection was made
 
 
 0.2.1 (2012-01-25)
