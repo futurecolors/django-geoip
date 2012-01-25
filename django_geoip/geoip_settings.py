@@ -12,6 +12,9 @@ class GeoIpConfig(AppConf):
     # Cookie stores location model primary key
     COOKIE_NAME = 'geoip_location_id'
 
+    # Fill in for custom case
+    COOKIE_DOMAIN = ''
+
     # Cookie lifetime in seconds
     COOKIE_EXPIRES = 9999999999
 
