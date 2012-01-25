@@ -15,29 +15,26 @@ class LocationCookieStorageTest(unittest.TestCase):
 
     def test_should_not_update_cookie_if_no_location_in_request(self):
         storage = LocationCookieStorage(request=HttpRequest(), response=HttpResponse())
-        self.assertFalse(storage._should_update_cookie())
+        self.assertFalse(storage._should_update_cookie(new_value=10))
 
     def test_should_update_cookie_if_cookie_doesnt_exist(self):
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        self.assertTrue(storage._should_update_cookie())
-
-    def test_should_not_update_cookie_if_cookie_is_fresh(self):
-        self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 10
-        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        storage.value = 10
-        self.assertFalse(storage._should_update_cookie())
+        self.assertTrue(storage._should_update_cookie(new_value=10))
 
     def test_should_not_update_cookie_if_cookie_is_none(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = None
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        storage.value = None
-        self.assertFalse(storage._should_update_cookie())
+        self.assertFalse(storage._should_update_cookie(new_value=None))
+
+    def test_should_not_update_cookie_if_cookie_is_fresh(self):
+        self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 10
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
+        self.assertFalse(storage._should_update_cookie(new_value=10))
 
     def test_should_update_cookie_if_cookie_is_obsolete(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 42
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        storage.value = 10
-        self.assertTrue(storage._should_update_cookie())
+        self.assertTrue(storage._should_update_cookie(new_value=10))
 
     @patch('django_geoip.storage.datetime')
     def test_do_set(self, mock):

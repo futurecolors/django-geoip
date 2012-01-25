@@ -14,7 +14,6 @@ class BaseLocationStorage(object):
     def __init__(self, request, response):
         self.request = request
         self.response = response
-        self.value = self.get()
 
     def get(self):
         raise NotImplemented
@@ -34,20 +33,22 @@ class BaseLocationStorage(object):
 class LocationDummyStorage(BaseLocationStorage):
     """ Fake storage for debug or when location doesn't neet to be stored
     """
-
     def get(self):
         return getattr(self.request, 'location', None)
 
     def set(self, location=None, force=False):
-        return self.get()
+        pass
 
 
 class LocationCookieStorage(BaseLocationStorage):
     """ Class that deals with saving user location on client's side (cookies)
     """
 
+    def _get_location_id(self):
+        return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+
     def get(self):
-        location_id = self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+        location_id = self._get_location_id()
 
         if location_id:
             try:
@@ -59,9 +60,8 @@ class LocationCookieStorage(BaseLocationStorage):
     def set(self, location=None, force=False):
         if not self._validate_location(location):
             raise ValueError
-        self.value = location.id
-        if force or self._should_update_cookie():
-            self._do_set(self.value)
+        if force or self._should_update_cookie(location.id):
+            self._do_set(location.id)
 
     def _do_set(self, value):
         self.response.set_cookie(
@@ -69,7 +69,7 @@ class LocationCookieStorage(BaseLocationStorage):
             value=value,
             expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
-    def _should_update_cookie(self):
+    def _should_update_cookie(self, new_value):
         # process_request never completed, don't need to update cookie
         if not hasattr(self.request, 'location'):
             return False
@@ -77,6 +77,6 @@ class LocationCookieStorage(BaseLocationStorage):
         if settings.GEOIP_COOKIE_NAME not in self.request.COOKIES:
             return True
         # Cookie is obsolete, because we've changed it's value during request
-        if str(self.get()) != str(self.value):
+        if str(self._get_location_id()) != str(new_value):
             return True
         return False

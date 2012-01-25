@@ -24,11 +24,11 @@ class Locator(object):
 
         :return: Custom location model
         """
-        cached_location = self._get_stored_location()
-        if not cached_location:
+        stored_location = self._get_stored_location()
+        if not stored_location:
             ip_range = self._get_ip_range()
-            cached_location = self._get_corresponding_location(ip_range)
-        return cached_location
+            stored_location = self._get_corresponding_location(ip_range)
+        return stored_location
 
     def _get_corresponding_location(self, ip_range):
         """

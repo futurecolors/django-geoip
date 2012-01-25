@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.1 (2012-01-20)
+0.2.1 (2012-01-25)
 ------------------
 
 * Fixed middleware behavior when request.location is None
