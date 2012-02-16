@@ -130,8 +130,8 @@ class IpGeoBaseTest(unittest.TestCase):
 
     def test_update_pre_existing_data(self):
         self.assertTrue(Country.objects.all().count() == 0)
-        ua = Country.objects.create(name=u'UA', code=u'UA')
-        ru = Country.objects.create(name=u'RU', code=u'RU')
+        ua = Country.objects.create(name=u'Ukraine', code=u'UA')
+        ru = Country.objects.create(name=u'Russia', code=u'RU')
 
         kemerovo = Region.objects.create(name=u'Кемеровская область', country=ru)
         City.objects.create(name=u'Березовский', id=1057, region=kemerovo)

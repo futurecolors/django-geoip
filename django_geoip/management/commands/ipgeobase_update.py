@@ -7,6 +7,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import urllib2
+from django_geoip.management.iso3166_1 import ISO_CODES
 from django_geoip.models import City, Region, Country, IpRange
 
 class Command(BaseCommand):
