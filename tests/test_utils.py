@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.test import TestCase
 from mock import patch
-from django_geoip.tests import unittest
 from django_geoip.utils import get_mod_func, get_class
 
-class UtilsTest(unittest.TestCase):
+
+class UtilsTest(TestCase):
     def test_get_mod_func(self):
         test_hash = {
             'django.views.news.stories.story_detail': ('django.views.news.stories', 'story_detail'),

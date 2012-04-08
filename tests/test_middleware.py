@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.test import TestCase
+from django.utils import unittest
 from django_geoip import middleware
 from django.http import HttpResponse
 from django_any.models import any_model
 from django_any.test import Client
-from mock import patch, Mock
+from mock import patch
 import django_geoip
 from django_geoip.base import  Locator
 from django_geoip.models import City
 from django_geoip.storage import LocationCookieStorage
-from django_geoip.tests import unittest
 from test_app.models import MyCustomLocation
 
 try:
@@ -17,8 +18,9 @@ try:
 except ImportError:
     RequestFactory = None
 
+
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-class MiddlewareTest(unittest.TestCase):
+class MiddlewareTest(TestCase):
     def setUp(self, *args, **kwargs):
         self.client = Client()
         self.factory = RequestFactory()

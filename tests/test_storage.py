@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.conf import settings
+from django.test import TestCase
 from django.http import HttpResponse, HttpRequest
+from django.utils import unittest
 from django_any.models import any_model
 from mock import patch, Mock
 from django_geoip.storage import LocationCookieStorage, LocationDummyStorage, BaseLocationStorage
-from django_geoip.tests import unittest
 from test_app.models import MyCustomLocation
 
-class BaseLocationStorageTest(unittest.TestCase):
+
+class BaseLocationStorageTest(TestCase):
 
     def setUp(self):
         self.settings_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
@@ -27,7 +29,7 @@ class BaseLocationStorageTest(unittest.TestCase):
         self.assertTrue(self.storage._validate_location(location))
 
 
-class LocationCookieStorageTest(unittest.TestCase):
+class LocationCookieStorageTest(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
@@ -81,7 +83,7 @@ class LocationCookieStorageTest(unittest.TestCase):
         self.assertEqual(storage._get_cookie_domain(), None)
 
 
-class LocationDummyStorageTest(unittest.TestCase):
+class LocationDummyStorageTest(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()

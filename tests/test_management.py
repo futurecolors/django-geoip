@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
+from django.test import TestCase
 import os
 import urllib2
 from django.conf import settings
 from django_geoip.management.commands.ipgeobase_update import Command
 from django_geoip.models import City, Region, Country, IpRange
 from mock import patch
-from django_geoip.tests import unittest
+
 
 TEST_STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
 
-class DowloadTest(unittest.TestCase):
+class DowloadTest(TestCase):
     IPGEOBASE_ZIP_FILE_PATH = 'tests.zip'
     IPGEOBASE_MOCK_URL = 'http://futurecolors/mock.zip'
 
@@ -33,7 +34,7 @@ class DowloadTest(unittest.TestCase):
         self.assertRaises(urllib2.URLError, Command()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
 
 
-class ConvertTest(unittest.TestCase):
+class ConvertTest(TestCase):
     maxDiff = None
 
     def test_convert_fileline_to_dict(self):
@@ -95,7 +96,7 @@ class ConvertTest(unittest.TestCase):
         self.assertEqual(cities_info['regions'], check_against['regions'])
 
 
-class IpGeoBaseTest(unittest.TestCase):
+class IpGeoBaseTest(TestCase):
     maxDiff = None
 
     def setUp(self):

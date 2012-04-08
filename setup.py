@@ -5,8 +5,12 @@ from setuptools import setup, find_packages
 read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 tests_require = [
-    'Django>=1.2,<1.4',
-    'mock>=0.7.2',
+    'Django>=1.2',
+    'django_nose==1.0.1'
+    'unittest2',
+    'mock==0.7.2',
+    'django-whatever>=0.2.3',
+    'south==0.7.3'
 ]
 
 setup(
@@ -19,6 +23,9 @@ setup(
     license='MIT',
     description="App to figure out where your visitors are from by their IP address.",
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
+    install_requires=[
+        "django-appconf==0.4.1",
+    ],
     tests_require=tests_require,
     test_suite = "runtests",
     extras_require={'test': tests_require},

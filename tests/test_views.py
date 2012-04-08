@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.test.testcases import TestCase
+from django.test import TestCase
 from django_any.models import any_model
 from django_any.test import Client
 from test_app.models import MyCustomLocation
 from mock import patch
+
 
 class SetLocationTest(TestCase):
 

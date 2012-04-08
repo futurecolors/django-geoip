@@ -1,12 +1,8 @@
-#!/usr/bin/env python
 import os, sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'test_settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'test_app.test_settings')
 
     from django.core.management import execute_from_command_line
 
-    if len(sys.argv) == 1:
-        sys.argv += ['test', 'django_geoip']
-
-    execute_from_command_line(sys.argv)
+    execute_from_command_line(['runtests.py', 'test'])
