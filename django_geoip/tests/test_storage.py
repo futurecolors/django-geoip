@@ -58,12 +58,12 @@ class LocationCookieStorageTest(unittest.TestCase):
 
     @patch('django_geoip.storage.datetime')
     def test_do_set(self, mock):
-        mock.now.return_value = datetime(2012, 1, 1, 0, 0, 0)
+        mock.utcnow.return_value = datetime(2012, 1, 1, 0, 0, 0)
         base_response = HttpResponse()
         storage = LocationCookieStorage(request=self.request, response=base_response)
         storage._do_set(10)
-        expected = 'Set-Cookie: geoip_location_id=10; expires=Tue, 20-Nov-2328 17:46:39 GMT;'
-        self.assertTrue(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().startswith(expected))
+        expected = ['Set-Cookie: geoip_location_id=10', 'expires=Tue, 01-Jan-2013 00:00:00 GMT']
+        self.assertEqual(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().split('; ')[:2], expected)
 
     @patch.object(settings, 'GEOIP_COOKIE_DOMAIN', '.testserver.local')
     def test_get_cookie_domain_from_settings(self):

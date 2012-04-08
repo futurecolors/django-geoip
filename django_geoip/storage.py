@@ -84,7 +84,7 @@ class LocationCookieStorage(BaseLocationStorage):
             key=settings.GEOIP_COOKIE_NAME,
             value=value,
             domain=self._get_cookie_domain(),
-            expires=datetime.now() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
+            expires=datetime.utcnow() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
     def _should_update_cookie(self, new_value):
         # process_request never completed, don't need to update cookie

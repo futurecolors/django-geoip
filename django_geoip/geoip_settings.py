@@ -15,8 +15,8 @@ class GeoIpConfig(AppConf):
     # Fill in for custom case
     COOKIE_DOMAIN = ''
 
-    # Cookie lifetime in seconds
-    COOKIE_EXPIRES = 9999999999
+    # Cookie lifetime in seconds (1 year by default)
+    COOKIE_EXPIRES = 31622400
 
     class Meta:
         prefix = 'geoip'
