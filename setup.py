@@ -6,11 +6,10 @@ read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 tests_require = [
     'Django>=1.2',
-    'django_nose==1.0.1'
+    'django-nose==1.0'
     'unittest2',
     'mock==0.7.2',
     'django-whatever>=0.2.3',
-    'south==0.7.3'
 ]
 
 setup(

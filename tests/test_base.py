@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.test.client import RequestFactory
 from django.test import TestCase
+from django.test.client import RequestFactory
 
 from django_any.models import any_model
 from django.utils import unittest
@@ -12,7 +12,6 @@ from test_app.models import MyCustomLocation
 from mock import patch, Mock
 
 
-@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
 class LocatorTest(TestCase):
     def setUp(self):
         self.location_model_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')

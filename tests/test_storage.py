@@ -3,7 +3,6 @@ from datetime import datetime
 from django.conf import settings
 from django.test import TestCase
 from django.http import HttpResponse, HttpRequest
-from django.utils import unittest
 from django_any.models import any_model
 from mock import patch, Mock
 from django_geoip.storage import LocationCookieStorage, LocationDummyStorage, BaseLocationStorage
