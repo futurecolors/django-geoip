@@ -4,7 +4,7 @@ from django.test import TestCase
 import os
 import urllib2
 from django.conf import settings
-from django_geoip.management.commands.ipgeobase_update import Command
+from django_geoip.management.ipgeobase import IpGeobase
 from django_geoip.models import City, Region, Country, IpRange
 from mock import patch
 
@@ -20,7 +20,7 @@ class DowloadTest(TestCase):
         self.opener = mock.return_value
         self.opener.read.return_value = open(os.path.join(TEST_STATIC_DIR, self.IPGEOBASE_ZIP_FILE_PATH)).read()
 
-        result = Command()._download_extract_archive(url=self.IPGEOBASE_MOCK_URL)
+        result = IpGeobase()._download_extract_archive(url=self.IPGEOBASE_MOCK_URL)
 
         mock.assert_called_once_with(self.IPGEOBASE_MOCK_URL)
         self.opener.read.assert_called_once_with()
@@ -31,7 +31,7 @@ class DowloadTest(TestCase):
     @patch('urllib2.urlopen')
     def test_download_exception(self, mock):
         mock.side_effect = urllib2.URLError('Response timeout')
-        self.assertRaises(urllib2.URLError, Command()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
+        self.assertRaises(urllib2.URLError, IpGeobase()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
 
 
 class ConvertTest(TestCase):
@@ -46,8 +46,8 @@ class ConvertTest(TestCase):
                               'latitude': u'27.000000'
         }
 
-        command = Command()
-        generator = command._line_to_dict(file=open(os.path.join(TEST_STATIC_DIR, 'cities.txt')),
+        backend = IpGeobase()
+        generator = backend._line_to_dict(file=open(os.path.join(TEST_STATIC_DIR, 'cities.txt')),
             field_names=settings.IPGEOBASE_CITIES_FIELDS)
         result = generator.next()
         self.assertEqual(result, check_against_dict)
@@ -62,8 +62,8 @@ class ConvertTest(TestCase):
             'countries': set([u'FR', u'UA', u'RU']),
             'city_country_mapping': {'2176': u'RU', '1': u'UA'}
         }
-        command = Command()
-        cidr_info = command._process_cidr_file(open(os.path.join(TEST_STATIC_DIR, 'cidr_optim.txt')))
+        backend = IpGeobase()
+        cidr_info = backend._process_cidr_file(open(os.path.join(TEST_STATIC_DIR, 'cidr_optim.txt')))
 
         self.assertEqual(cidr_info['city_country_mapping'], check_against['city_country_mapping'])
         self.assertEqual(cidr_info['countries'], check_against['countries'])
@@ -89,8 +89,8 @@ class ConvertTest(TestCase):
             ]
         }
 
-        command = Command()
-        cities_info = command._process_cities_file(open(os.path.join(TEST_STATIC_DIR, 'cities.txt')), city_country_mapping)
+        backend = IpGeobase()
+        cities_info = backend._process_cities_file(open(os.path.join(TEST_STATIC_DIR, 'cities.txt')), city_country_mapping)
 
         self.assertEqual(cities_info['cities'], check_against['cities'])
         self.assertEqual(cities_info['regions'], check_against['regions'])
@@ -122,7 +122,7 @@ class IpGeoBaseTest(TestCase):
         Country.objects.all().delete()
 
     def test_update_geography_empty_data(self):
-        command = Command()
+        command = IpGeobase()
         cities_info = command._update_geography(self.countries, self.regions, self.cities)
 
         self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
@@ -137,8 +137,8 @@ class IpGeoBaseTest(TestCase):
         kemerovo = Region.objects.create(name=u'Кемеровская область', country=ru)
         City.objects.create(name=u'Березовский', id=1057, region=kemerovo)
 
-        command = Command()
-        command._update_geography(self.countries, self.regions, self.cities)
+        backend = IpGeobase()
+        backend._update_geography(self.countries, self.regions, self.cities)
 
         self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
         self.assertItemsEqual(list(Region.objects.all().values('name', 'country__code')), self.regions)
@@ -157,8 +157,8 @@ class IpGeoBaseTest(TestCase):
             region = Region.objects.get(name=city['region__name'])
             City.objects.create(id=city['id'], name=city['name'], region=region)
 
-        command = Command()
-        mapping = command._build_city_region_mapping()
+        backend = IpGeobase()
+        mapping = backend._build_city_region_mapping()
 
         self.assertEqual(mapping, check_against_mapping)
 
@@ -170,13 +170,13 @@ class IpGeoBaseTest(TestCase):
                 {'start_ip': 37355520, 'end_ip': 37392639, 'country_id': 'RU', 'city_id': 2176,'region_id': 3},
         ]
 
-        command = Command()
+        backend = IpGeobase()
         for region in self.regions:
             Region.objects.create(name=region['name'], country_id=region['country__code'])
         for city in self.cities:
             region = Region.objects.get(name=city['region__name'])
             City.objects.create(id=city['id'], name=city['name'], region=region)
-        command._update_cidr(self.cidr)
+        backend._update_cidr(self.cidr)
 
         self.assertItemsEqual(IpRange.objects.all().values('start_ip', 'end_ip', 'country_id', 'city_id', 'region_id'),
             check_against_ranges)

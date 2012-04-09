@@ -1,60 +1,60 @@
 # -*- coding: utf-8 -*-
-from cStringIO import StringIO
-from optparse import make_option
 import tempfile
-from zipfile import ZipFile
-from decimal import Decimal
-from django.core.management.base import BaseCommand
-from django.conf import settings
+import zipfile
 import urllib2
-from django_geoip.management.iso3166_1 import ISO_CODES
-from django_geoip.models import City, Region, Country, IpRange
+from cStringIO import StringIO
+from decimal import Decimal
 
-class Command(BaseCommand):
-    help = 'Updates ipgeobase'
-    incoming = {'countries': set(),
-                'city_country_mapping': {}
-    }
-    option_list = BaseCommand.option_list + (
-        make_option('--clear',
-            action='store_true',
-            default=False,
-            help=u"Clear tables prior import",
-        ),
-    )
+from django.conf import settings
 
-    def handle(self, *args, **options):
-        print u'Updating ipgeobase...'
-        files = self._download_extract_archive(settings.IPGEOBASE_SOURCE_URL)
-        cidr_info = self._process_cidr_file(open(files['cidr'], 'r'))
-        city_info = self._process_cities_file(open(files['cities'], 'r'),
+from django_geoip.models import IpRange, City, Region, Country
+
+
+class IpGeobase(object):
+    """Backend to download and update geography and ip addresses mapping.
+    """
+
+    def __init__(self):
+        self.files = {}
+
+    def clear_database(self):
+        """ Removes all geodata stored in database.
+            Useful for development, never use on production.
+        """
+        IpRange.objects.all().delete()
+        City.objects.all().delete()
+        Region.objects.all().delete()
+        Country.objects.all().delete()
+
+    def download_files(self):
+        self.files = self._download_extract_archive(settings.IPGEOBASE_SOURCE_URL)
+        return self.files
+
+    def sync_database(self):
+        cidr_info = self._process_cidr_file(open(self.files['cidr'], 'r'))
+        city_info = self._process_cities_file(open(self.files['cities'], 'r'),
                                               cidr_info['city_country_mapping'])
-        if options.get("clear_db"):
-            IpRange.objects.all().delete()
-            City.objects.all().delete()
-            Region.objects.all().delete()
-            Country.objects.all().delete()
         self._update_geography(cidr_info['countries'],
             city_info['regions'],
             city_info['cities'])
         self._update_cidr(cidr_info)
+
+    def _download_extract_archive(self, url):
+        """ Returns dict with 2 extracted filenames """
+        try:
+            temp_dir = tempfile.mkdtemp()
+            archive = zipfile.ZipFile(self._download_url_to_string(url))
+            file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
+            file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
+            return {'cities': file_cities, 'cidr': file_cidr}
+        except urllib2.URLError:
+            raise
 
     def _download_url_to_string(self, url):
         f = urllib2.urlopen(url)
         buffer = StringIO(f.read())
         f.close()
         return buffer
-
-    def _download_extract_archive(self, url):
-        """ Returns dict with 2 extracted filenames """
-        try:
-            temp_dir = tempfile.mkdtemp()
-            archive = ZipFile(self._download_url_to_string(url))
-            file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
-            file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
-            return {'cities': file_cities, 'cidr': file_cidr}
-        except urllib2.URLError:
-            raise
 
     def _line_to_dict(self, file, field_names):
         """ Converts file line into dictonary """

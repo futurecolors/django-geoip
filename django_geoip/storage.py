@@ -27,8 +27,6 @@ class BaseLocationStorage(object):
             return self.location_model.objects.filter(pk=location.id).exists()
         except AttributeError:
             raise
-            return False
-
 
     def _get_by_id(self, location_id):
         return get_class(settings.GEOIP_LOCATION_MODEL).objects.get(pk=location_id)

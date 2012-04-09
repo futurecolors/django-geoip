@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2.3dev (2012-04-??)
+---------------------
+
+* Added country names
+* Management update command renamed from ``ipgeobase_update`` to ``geoip_update``
+* Dropped django 1.2 support
+* Documentation improved
+
+
 0.2.2 (2012-01-25)
 ------------------
 
