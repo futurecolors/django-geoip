@@ -3,9 +3,10 @@ django-geoip
 
 App to figure out where your visitors are from by their IP address.
 
-Right now django-geoip is based on ipgeobase.ru data and provides accurate
-geolocation in Russia and Ukraine only. There are plans to add other backends
-in future releases.
+.. note::
+    Currentrly ``django-geoip`` supports only `ipgeobase.ru <http://ipgeobase.ru>`_ backend.
+    It provides accurate geolocation in Russia and Ukraine only.
+    There are plans to add other backends in future releases.
 
 Contents
 --------
@@ -16,6 +17,7 @@ Contents
   installation
   howitworks
   highlevel
+  backends
   update
   settings
   reference
