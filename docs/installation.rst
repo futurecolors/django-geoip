@@ -32,6 +32,7 @@ In order to make user's location detection automatic several other steps are req
 
     MIDDLEWARE_CLASSES = (...
         'django_geoip.middleware.LocationMiddleware',
+        ...
     )
 
 * Include app urls into your urlconf if you want to allow visitors to change their region::
@@ -39,6 +40,7 @@ In order to make user's location detection automatic several other steps are req
     urlpatterns += patterns('',
         ...
         (r'^geoip/', include('django_geoip.urls')),
+        ...
     )
 
 * Provide a custom location model (inherited from django_geoip.models.GeoLocationFascade)
@@ -46,3 +48,4 @@ In order to make user's location detection automatic several other steps are req
 * Specify this model in settings::
 
     GEOIP_LOCATION_MODEL = 'example.models.Location' #example
+

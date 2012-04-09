@@ -14,7 +14,7 @@ tests_require = [
 
 setup(
     name='django-geoip',
-    version='0.2.2',
+    version='0.2.3dev',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
     packages=find_packages(exclude=("tests")),
@@ -23,7 +23,7 @@ setup(
     description="App to figure out where your visitors are from by their IP address.",
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
     install_requires=[
-        "django-appconf==0.4.1",
+        'django-appconf==0.4.1',
     ],
     tests_require=tests_require,
     test_suite = "runtests",
