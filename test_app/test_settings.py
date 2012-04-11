@@ -14,3 +14,4 @@ SECRET_KEY = '_'
 ROOT_URLCONF = 'test_app.urls'
 INSTALLED_APPS = ('django_nose', 'django_geoip', 'test_app')
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+#NOSE_ARGS = ["-a'!system'"]

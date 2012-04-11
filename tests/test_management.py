@@ -7,6 +7,7 @@ from django.conf import settings
 from django_geoip.management.ipgeobase import IpGeobase
 from django_geoip.models import City, Region, Country, IpRange
 from mock import patch
+from nose.plugins.attrib import attr
 
 
 TEST_STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
@@ -180,3 +181,11 @@ class IpGeoBaseTest(TestCase):
 
         self.assertItemsEqual(IpRange.objects.all().values('start_ip', 'end_ip', 'country_id', 'city_id', 'region_id'),
             check_against_ranges)
+
+
+#@attr('system')
+#class IpGeoBaseSystemTest(TestCase):
+#
+#    def test_whole_management_command(self):
+#        from django.core import management
+#        management.call_command('geoip_update', verbosity=0, interactive=False)

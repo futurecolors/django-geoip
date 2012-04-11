@@ -6,6 +6,7 @@ Changelog
 
 * Added country names
 * Management update command renamed from ``ipgeobase_update`` to ``geoip_update``
+* Management command verbose output with progressbar
 * Dropped django 1.2 support
 * Documentation improved
 

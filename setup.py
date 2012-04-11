@@ -24,6 +24,7 @@ setup(
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
     install_requires=[
         'django-appconf==0.4.1',
+        'progressbar==2.3',
     ],
     tests_require=tests_require,
     test_suite = "runtests",

@@ -6,6 +6,9 @@ from cStringIO import StringIO
 from decimal import Decimal
 
 from django.conf import settings
+import logging
+from progressbar import ProgressBar
+from progressbar.widgets import Percentage, Bar
 
 from django_geoip.models import IpRange, City, Region, Country
 
@@ -14,13 +17,15 @@ class IpGeobase(object):
     """Backend to download and update geography and ip addresses mapping.
     """
 
-    def __init__(self):
+    def __init__(self, logger=None):
         self.files = {}
+        self.logger = logger or logging.getLogger(name='geoip_update')
 
     def clear_database(self):
         """ Removes all geodata stored in database.
             Useful for development, never use on production.
         """
+        self.logger.info('Removing obsolete geoip from database...')
         IpRange.objects.all().delete()
         City.objects.all().delete()
         Region.objects.all().delete()
@@ -34,16 +39,20 @@ class IpGeobase(object):
         cidr_info = self._process_cidr_file(open(self.files['cidr'], 'r'))
         city_info = self._process_cities_file(open(self.files['cities'], 'r'),
                                               cidr_info['city_country_mapping'])
+        self.logger.info('Updating locations...')
         self._update_geography(cidr_info['countries'],
             city_info['regions'],
             city_info['cities'])
+        self.logger.info('Updating CIDR...')
         self._update_cidr(cidr_info)
 
     def _download_extract_archive(self, url):
         """ Returns dict with 2 extracted filenames """
         try:
+            self.logger.info('Downloading zipfile from ipgeobase.ru...')
             temp_dir = tempfile.mkdtemp()
             archive = zipfile.ZipFile(self._download_url_to_string(url))
+            self.logger.info('Extracting files...')
             file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
             file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
             return {'cities': file_cities, 'cidr': file_cidr}
@@ -126,7 +135,12 @@ class IpGeobase(object):
         """ Rebuild IPRegion table with fresh data (old ip ranges are removed for simplicity)"""
         IpRange.objects.all().delete()
         city_region_mapping = self._build_city_region_mapping()
-        for entry in cidr['cidr']:
+
+        widgets = []
+        if self.logger.getEffectiveLevel() in [logging.INFO, logging.DEBUG]:
+            widgets = [Percentage(), ' ', Bar()]
+        pbar = ProgressBar(widgets=widgets)
+        for entry in pbar(cidr['cidr']):
             # skipping for country rows
             if entry['city_id']:
                 entry.update({'region_id': city_region_mapping[int(entry['city_id'])]})
