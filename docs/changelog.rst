@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.2.3dev (2012-04-??)
----------------------
+0.2.3 (2012-04-11)
+------------------
 
 * Added country names
 * Management update command renamed from ``ipgeobase_update`` to ``geoip_update``
