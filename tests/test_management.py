@@ -183,9 +183,9 @@ class IpGeoBaseTest(TestCase):
             check_against_ranges)
 
 
-#@attr('system')
-#class IpGeoBaseSystemTest(TestCase):
-#
-#    def test_whole_management_command(self):
-#        from django.core import management
-#        management.call_command('geoip_update', verbosity=0, interactive=False)
+@attr('system')
+class IpGeoBaseSystemTest(TestCase):
+
+    def test_whole_management_command(self):
+        from django.core import management
+        management.call_command('geoip_update', verbosity=0, interactive=False)

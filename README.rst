@@ -7,4 +7,4 @@ App to figure out where your visitors are from by their IP address.
 
 Tha app is early alpha, beware.
 
-Docs: http://readthedocs.org/docs/django-geoip/en/latest/
+Docs: http://django-geoip.readthedocs.org/
