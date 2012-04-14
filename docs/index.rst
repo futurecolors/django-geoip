@@ -12,7 +12,7 @@ Contents
 --------
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
   installation
   howitworks
@@ -21,7 +21,7 @@ Contents
   update
   settings
   reference
-  djangohosts
+  tests
   changelog
 
 Development

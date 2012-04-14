@@ -1,9 +1,24 @@
+#!/usr/bin/env python
 import os, sys
+from optparse import OptionParser
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'test_app.test_settings')
+from django_nose.runner import NoseTestSuiteRunner
 
-if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'test_app.test_settings')
+def runtests(*test_args, **kwargs):
 
-    from django.core.management import execute_from_command_line
+    if not test_args:
+        test_args = ['tests']
+    kwargs.setdefault('interactive', False)
+    test_runner = NoseTestSuiteRunner(**kwargs)
 
-    argv = ['runtests.py', 'test'] + sys.argv[1:]
-    execute_from_command_line(argv)
+    failures = test_runner.run_tests(test_args)
+    sys.exit(failures)
+
+
+if __name__ == '__main__':
+    parser = OptionParser()
+    parser.add_option('--verbosity', dest='verbosity', action='store', default=1, type=int)
+    parser.add_options(NoseTestSuiteRunner.options)
+    (options, args) = parser.parse_args()
+
+    runtests(*args, **options.__dict__)

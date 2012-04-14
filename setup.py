@@ -6,7 +6,7 @@ read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 tests_require = [
     'Django>=1.2',
-    'django-nose==1.0'
+    'django-nose==1.0',
     'unittest2',
     'mock==0.7.2',
     'django-whatever>=0.2.3',
@@ -27,7 +27,7 @@ setup(
         'progressbar==2.3',
     ],
     tests_require=tests_require,
-    test_suite = "runtests",
+    test_suite = "runtests.runtests",
     extras_require={'test': tests_require},
     classifiers = [
         'Development Status :: 3 - Alpha',
