@@ -133,6 +133,8 @@ class IpGeobase(object):
 
     def _update_cidr(self, cidr):
         """ Rebuild IPRegion table with fresh data (old ip ranges are removed for simplicity)"""
+        new_ip_ranges = []
+        is_bulk_create_supported = hasattr(IpRange.objects, 'bulk_create')
         IpRange.objects.all().delete()
         city_region_mapping = self._build_city_region_mapping()
 
@@ -144,7 +146,12 @@ class IpGeobase(object):
             # skipping for country rows
             if entry['city_id']:
                 entry.update({'region_id': city_region_mapping[int(entry['city_id'])]})
-            IpRange.objects.create(**entry)
+            if is_bulk_create_supported:
+                new_ip_ranges.append(IpRange(**entry))
+            else:
+                IpRange.objects.create(**entry)
+        if is_bulk_create_supported:
+            IpRange.objects.bulk_create(new_ip_ranges)
 
     def _build_city_region_mapping(self):
         cities = City.objects.values('id', 'region__id')
