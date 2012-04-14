@@ -2,6 +2,7 @@
 from django.db import models
 from django_geoip.models import GeoLocationFascade, City
 
+
 class MyCustomLocation(GeoLocationFascade):
     name = models.CharField(max_length=100)
     city = models.OneToOneField(City, related_name='my_custom_location')

@@ -21,6 +21,7 @@ Contents
   update
   settings
   reference
+  djangohosts
   changelog
 
 Development

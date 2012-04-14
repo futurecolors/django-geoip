@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import socket
 import struct
+from abc import ABCMeta
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
@@ -100,12 +102,26 @@ class IpRange(models.Model):
         verbose_name_plural = _(u"IP ranges")
 
 
+class abstractclassmethod(classmethod):
+    """ Abstract classmethod decorator from python 3"""
+    __isabstractmethod__ = True
+
+    def __init__(self, callable):
+        callable.__isabstractmethod__ = True
+        super(abstractclassmethod, self).__init__(callable)
+
+
+class AbsractModel(ABCMeta, ModelBase):
+    pass
+
+
 class GeoLocationFascade(models.Model):
     """ Interface for custom geographic models.
         Model represents a fascade pattern for concrete GeoIP models.
     """
+    __metaclass__ = AbsractModel
 
-    @classmethod
+    @abstractclassmethod
     def get_by_ip_range(cls, ip_range):
         """
         Return single model instance for given IP range.
@@ -117,7 +133,7 @@ class GeoLocationFascade(models.Model):
         """
         return NotImplemented
 
-    @classmethod
+    @abstractclassmethod
     def get_default_location(cls):
         """
         Return default location for cases where ip geolocation fails.
@@ -126,14 +142,14 @@ class GeoLocationFascade(models.Model):
         """
         return NotImplemented
 
-    @classmethod
+    @abstractclassmethod
     def get_available_locations(cls):
         """
         Return all locations available for users to select in frontend
 
         :return: GeoLocationFascade
         """
-        return cls.objects.all()
+        return NotImplemented
 
     class Meta:
         abstract = True

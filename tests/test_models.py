@@ -3,7 +3,7 @@ import struct
 import socket
 from django.test import TestCase
 from django_any.models import any_model
-from django_geoip.models import IpRange, Region, Country, City
+from django_geoip.models import IpRange, Region, Country, City, GeoLocationFascade
 
 
 class IpRangeTest(TestCase):
@@ -30,3 +30,14 @@ class IpRangeTest(TestCase):
         self.assertEqual(ip_range.city, self.city)
         self.assertEqual(ip_range.city.region, self.region)
         self.assertEqual(ip_range.city.region.country, self.country)
+
+
+class GeoFascadeTest(TestCase):
+
+    def test_bad_subclass_doesnt_implement(self):
+        class MyFascade(GeoLocationFascade):
+
+            def get_by_ip_range(cls, ip_range):
+                return None
+
+        self.assertRaises(TypeError, MyFascade)
