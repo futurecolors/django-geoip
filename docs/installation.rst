@@ -3,10 +3,12 @@ Installation
 
 This app works with python 2.6-2.7, Django 1.3 and higher.
 
-Recommended way to install is pip::
+Recommended way to install is via pip::
 
   pip install django-geoip
 
+
+.. _basic:
 
 Basic
 -----
@@ -18,10 +20,21 @@ Basic
                       ...
                      )
 
-* Run ``python manage.py syncdb`` or ``python manage.py migrate`` (if you're using South)
+* Create application tables in database::
 
-* Run ``python manage.py ipgeobase_update`` to obtain latest IpGeoBase data.
+    python manage.py syncdb
 
+  If you're using South::
+
+    python manage.py migrate
+
+
+* Obtain latest data to perform geoip detection by :ref:`running management command <update>`::
+
+    python manage.py geoip_update
+
+
+.. _advanced:
 
 Advanced
 --------
@@ -35,6 +48,12 @@ In order to make user's location detection automatic several other steps are req
         ...
     )
 
+* Provide a custom location model (inherited from django_geoip.models.GeoLocationFascade)
+
+* Specify this model in settings::
+
+    GEOIP_LOCATION_MODEL = 'example.models.Location' # just an example, replace with your own
+
 * Include app urls into your urlconf if you want to allow visitors to change their region::
 
     urlpatterns += patterns('',
@@ -42,10 +61,4 @@ In order to make user's location detection automatic several other steps are req
         (r'^geoip/', include('django_geoip.urls')),
         ...
     )
-
-* Provide a custom location model (inherited from django_geoip.models.GeoLocationFascade)
-
-* Specify this model in settings::
-
-    GEOIP_LOCATION_MODEL = 'example.models.Location' #example
 
