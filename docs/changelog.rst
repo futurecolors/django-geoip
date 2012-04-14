@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.4dev (2012-04-??)
+---------------------
+* Added proper datamigration for countrynames
+
+
 0.2.3 (2012-04-11)
 ------------------
 
