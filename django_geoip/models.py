@@ -11,7 +11,7 @@ from django_geoip import ipgeobase_settings, geoip_settings
 
 
 class Country(models.Model):
-    """ One country per row, contains country code and country name (TBD, #2)
+    """ One country per row, contains country code and country name.
     """
     code = models.CharField(_('country code'), max_length=2, primary_key=True)
     name = models.CharField(_('country name'), max_length=255, unique=True)
