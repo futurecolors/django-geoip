@@ -4,9 +4,10 @@ Changelog
 0.2.4dev (2012-04-??)
 ---------------------
 
-* Added proper datamigration for countrynames
-* GeoLocationFascade has abstract classmethods
-* Added bulk_create support for Django 1.4
+* Proper datamigration for countrynames
+* GeoLocationFascade defines abstract classmethods
+* bulk_create support for Django 1.4
+* Short tutorial for django-hosts integration
 
 
 0.2.3 (2012-04-11)
