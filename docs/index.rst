@@ -3,6 +3,9 @@ django-geoip
 
 App to figure out where your visitors are from by their IP address.
 
+Detects country, region and city, querying the database with geodata.
+Optional :ref:`high-level API <highlevel>` provides user location in request object.
+
 .. note::
     Currentrly ``django-geoip`` supports only `ipgeobase.ru <http://ipgeobase.ru>`_ backend. |br|
     It provides accurate geolocation in Russia and Ukraine only. |br|
@@ -12,7 +15,7 @@ Contents
 --------
 
 .. toctree::
-  :maxdepth: 1
+  :maxdepth: 2
 
   installation
   usage
@@ -22,8 +25,8 @@ Contents
   settings
   reference
   djangohosts
-  tests
   changelog
+
 
 Development
 -----------
@@ -38,9 +41,16 @@ Feel free to submit issues_, pull requests are also welcome.
 Tests
 -----
 
+.. toctree::
+  :hidden:
+
+  tests
+
 You can run testsuite this way::
 
     python manage.py runtests.py
+
+:ref:`More on tests <tests>`
 
 .. |br| raw:: html
 

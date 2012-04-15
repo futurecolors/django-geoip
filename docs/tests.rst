@@ -1,3 +1,5 @@
+.. _tests:
+
 Running tests
 =============
 
