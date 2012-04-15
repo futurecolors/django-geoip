@@ -121,11 +121,54 @@ Very basic implementation of ``GeoLocationFascade`` for demonstration purpose::
         def get_available_locations(cls):
             return cls.objects.all()
 
-Switching region
-----------------
+Switching user's location
+-------------------------
 
-Works very much like `The set_language redirect view`_.
-Make sure you've included ``django_geoip.urls`` in your urlpatterns.
-Note that ``set_location`` view accepts only POST requests.
+Switching location from front-end is very much like `changing language in Django`_
+(in fact the code is almost the same with a little bit of difference, docs are a nice rip-off).
 
-.. _The set_language redirect view: https://docs.djangoproject.com/en/1.0/topics/i18n/#the-set-language-redirect-view
+    As a convenience, the app comes with a view, ``django_geoip.views.set_location``,
+    that sets a user's location and redirects back to the previous page.
+
+    Activate this view by adding the following line to your URLconf:
+
+    .. code-block:: django
+
+        # Note that this example makes the view available at /geoip/change/
+        (r'^geoip/', include('django_geoip.urls')),
+
+    The view expects to be called via the POST method, with a location identifier
+    ``location_id`` set in request. It saves the location choice in a cookie that is
+    by default named ``geoip_location_id``.
+    (The name can be changed through the ``GEOIP_COOKIE_NAME`` setting.)
+
+    After setting the language choice, Django redirects the user, following this algorithm:
+
+    * Django looks for a ``next`` parameter in the POST data.
+    * If that doesn't exist, or is empty, Django tries the URL in the ``Referrer`` header.
+    * If that's empty -- say, if a user's browser suppresses that header -- then the user will be redirected to / (the site root) as a fallback.
+
+    Here's example part of a view rendering a form to change location:
+
+    .. code-block:: django
+
+        def get_context(self, **kwargs):
+            return {'LOCATIONS': location_model.get_available_locations()}
+
+    Here's example HTML template code:
+
+    .. code-block:: django
+
+        {% load url from future %}
+
+        <form action="{% url 'geoip_change_location' %}" method="post">
+        <input name="next" type="hidden" value="/next/page/" />
+            <select name="location_id">
+            {% for location in LOCATIONS %}
+            <option value="{{ location.id }}">{{ location.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Change" />
+        </form>
+
+.. _changing language in Django: https://docs.djangoproject.com/en/1.0/topics/i18n/#the-set-language-redirect-view
