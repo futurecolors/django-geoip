@@ -53,7 +53,7 @@ user's location should be accessible via ``request`` object::
 ``request.location`` is an instance of a custom model that you're required to create on your own
 (details below).
 
-.. _location_model:
+.. _location_model_rationale:
 
 Location model rationale
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,6 +66,8 @@ or vary on custom areas, combining various cities, that don't match actual geogr
 In order to abstract geography from business logic, `django-geoip requires a model`,
 specific to your own app.
 
+
+.. _location_model:
 
 Creating custom location model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,6 +93,8 @@ Location should implement following classmethods:
 
 .. _proxy model: https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-models
 
+
+.. _location_model_example:
 
 Example of custom location model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,6 +124,9 @@ Very basic implementation of ``GeoLocationFascade`` for demonstration purpose::
         @classmethod
         def get_available_locations(cls):
             return cls.objects.all()
+
+
+.. _setlocation:
 
 Switching user's location
 -------------------------

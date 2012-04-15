@@ -13,16 +13,16 @@ storage_class = get_class(settings.GEOIP_STORAGE_CLASS)
 
 
 class Locator(object):
-    """ A helper class that automates user location detection
+    """ A helper class that automates user location detection.
     """
 
     def __init__(self, request):
         self.request = request
 
     def locate(self):
-        """ Find out what is user location (either from his ip or cookie)
+        """ Find out what is user location (either from his IP or cookie).
 
-        :return: Custom location model
+        :return: :ref:`Custom location model <location_model>`
         """
         stored_location = self._get_stored_location()
         if not stored_location:
@@ -34,7 +34,7 @@ class Locator(object):
         """
         Check whether user location will be detected by ip or fetched from storage.
 
-        Useful for integration with django-hosts.
+        Useful for integration with :ref:`django-hosts <djangohosts>`.
         """
         return self._get_stored_location() is None
 
@@ -53,7 +53,7 @@ class Locator(object):
 
     def _get_real_ip(self):
         """
-        Get IP from request
+        Get IP from request.
 
         :param request: A usual request object
         :type request: HttpRequest
@@ -71,7 +71,7 @@ class Locator(object):
 
     def _get_ip_range(self):
         """
-        Fetches IpRange instance if request IP is found in database
+        Fetches IpRange instance if request IP is found in database.
 
         :param request: A ususal request object
         :type request: HttpRequest
@@ -85,7 +85,7 @@ class Locator(object):
         return geobase_entry
 
     def _get_stored_location(self):
-        """ Get location from cookie
+        """ Get location from cookie.
 
         :param request: A ususal request object
         :type request: HttpRequest

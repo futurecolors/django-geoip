@@ -1,3 +1,5 @@
+.. _djangohosts:
+
 Integrating with django-hosts
 =============================
 
@@ -20,7 +22,12 @@ and ``us.site.com`` for american ones. For european users in will remain ``www.s
 
    This model is referenced in ``settings.py``::
 
-        LOCATION_MODEL = 'app.models.Location'
+        GEOIP_LOCATION_MODEL = 'app.models.Location'
+
+   We also need to change default user location storage mechanism, because it's fully determined
+   by hostname::
+
+        GEOIP_STORAGE_CLASS = 'django_geoip.storage.LocationDummyStorage'
 
 
 1) Install and setup django-hosts_
