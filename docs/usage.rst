@@ -2,7 +2,7 @@ Usage
 =====
 
 The app provides both high and low-level APIs to work with geolocation.
-Low-level API works super-simple: it guesses geographic location given an IP adress.
+Low-level API works super-simple: it guesses geographic location by an IP adress.
 High-level API is more complex and deeply integrated in Django: it automatically
 detects user location in every request and makes it available as ``request.location``.
 
@@ -12,7 +12,7 @@ Low-level API usage
 -------------------
 
 Low-level API allows you to guess user's location by his IP address.
-This function returns a database record, associated with IP's city, region and country.
+This function returns a :ref:`database record <iprange>`, associated with IP's city, region and country.
 
 Here is a basic example::
 
@@ -73,7 +73,7 @@ Creating custom location model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a django model, that inherits from ``django_geoip.models.GeoLocationFascade``.
-It might be a `proxy model`_ and doesn't require a separate database table, but it
+It might be a `proxy model`_ that doesn't require a separate database table, but it
 might be handy in many cases.
 
 Location should implement following classmethods:

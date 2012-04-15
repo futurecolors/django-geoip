@@ -3,7 +3,7 @@ django-geoip
 
 App to figure out where your visitors are from by their IP address.
 
-Detects country, region and city, querying the database with geodata.
+Detects country, region and city, querying the database with geodata. |br|
 Optional :ref:`high-level API <highlevel>` provides user location in request object.
 
 .. note::

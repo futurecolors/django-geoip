@@ -39,7 +39,7 @@ Basic
 Advanced
 --------
 
-In order to make user's location detection automatic several other steps are required:
+In order to make :ref:`user's location detection automatic <highlevel>` several other steps are required:
 
 * Add ``LocationMiddleware`` to ``MIDDLEWARE_CLASSES``::
 
@@ -48,13 +48,13 @@ In order to make user's location detection automatic several other steps are req
         ...
     )
 
-* Provide a custom location model (inherited from django_geoip.models.GeoLocationFascade)
+* Provide a custom :ref:`location model <location_model>` (inherited from ``django_geoip.models.GeoLocationFascade``)
 
-* Specify this model in settings::
+* Specify this model in :ref:`settings`::
 
     GEOIP_LOCATION_MODEL = 'example.models.Location' # just an example, replace with your own
 
-* Include app urls into your urlconf if you want to allow visitors to change their region::
+* Include app urls into your urlconf if you want to :ref:`allow visitors to change their location <setlocation>`::
 
     urlpatterns += patterns('',
         ...

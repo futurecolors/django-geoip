@@ -17,6 +17,8 @@ all entities, i.e. Country has many Regions, Region has many Cities.
 .. automodule:: django_geoip.models
    :members: Country, Region, City
 
+.. _iprange:
+
 IP ranges
 ~~~~~~~~~
 
