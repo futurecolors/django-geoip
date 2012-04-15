@@ -4,19 +4,20 @@ from appconf import AppConf
 class GeoIpConfig(AppConf):
     """ GeoIP configuration """
 
-    #: Provide a model that stores geography, specific to your application
+    #: A reference to a :ref:`model <location_model>` that stores custom geography, specific to application.
     LOCATION_MODEL = 'django_geoip.models.GeoLocationFascade'
 
-    #: Persistant storage class for user location (cookies or dummy are available)
+    #: Persistent storage class for user location
+    # (LocationCookieStorage or LocationDummyStorage are available).
     STORAGE_CLASS = 'django_geoip.storage.LocationCookieStorage'
 
-    #: Cookie stores location model primary key
+    #: Cookie name for LocationCookieStorage class (stores :ref:`custom location's <location_model>` primary key).
     COOKIE_NAME = 'geoip_location_id'
 
-    #: Fill in for custom case
+    #: Cookie domain for LocationCookieStorage class.
     COOKIE_DOMAIN = ''
 
-    #: Cookie lifetime in seconds (1 year by default)
+    #: Cookie lifetime in seconds (1 year by default) for LocationCookieStorage class.
     COOKIE_EXPIRES = 31622400
 
     class Meta:

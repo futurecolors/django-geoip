@@ -1,7 +1,8 @@
 Settings
 ========
 
-``django-geoip`` has some public and internal configuration:
+``django-geoip`` has some public configuration:
 
 .. autoclass:: django_geoip.geoip_settings.GeoIpConfig
    :members:
+
