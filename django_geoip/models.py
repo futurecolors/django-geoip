@@ -7,6 +7,7 @@ from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
+import warnings
 from django_geoip import ipgeobase_settings, geoip_settings
 
 
@@ -115,9 +116,9 @@ class AbsractModel(ABCMeta, ModelBase):
     pass
 
 
-class GeoLocationFascade(models.Model):
+class GeoLocationFacade(models.Model):
     """ Interface for custom geographic models.
-        Model represents a fascade pattern for concrete GeoIP models.
+        Model represents a Facade pattern for concrete GeoIP models.
     """
     __metaclass__ = AbsractModel
 
@@ -129,7 +130,7 @@ class GeoLocationFascade(models.Model):
 
         :param ip_range: User's IpRange to search for.
         :type ip_range: IpRange
-        :return: GeoLocationFascade single object
+        :return: GeoLocationFacade single object
         """
         return NotImplemented
 
@@ -138,7 +139,7 @@ class GeoLocationFascade(models.Model):
         """
         Return default location for cases where ip geolocation fails.
 
-        :return: GeoLocationFascade
+        :return: GeoLocationFacade
         """
         return NotImplemented
 
@@ -147,9 +148,21 @@ class GeoLocationFascade(models.Model):
         """
         Return all locations available for users to select in frontend
 
-        :return: GeoLocationFascade
+        :return: GeoLocationFacade
         """
         return NotImplemented
 
     class Meta:
         abstract = True
+
+
+class GeoLocationFascade(GeoLocationFacade):
+    """ Old alias with a typo """
+
+    def __init__(self, **kwargs):
+        warnings.warn(
+            _("GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
+              "Alias will be removed in 0.3"),
+            DeprecationWarning
+        )
+        super(GeoLocationFascade, self).__init__(**kwargs)

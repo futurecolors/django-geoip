@@ -3,11 +3,11 @@ Reference
 
 This section comtains documentation to module internals, useful for ``django-geoip`` developers.
 
-GeoLocationFascade
+GeoLocationFacade
 ~~~~~~~~~~~~~~~~~~
 
 .. automodule:: django_geoip.models
-   :members: GeoLocationFascade
+   :members: GeoLocationFacade
 
 Locator
 ~~~~~~~

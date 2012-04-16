@@ -5,7 +5,7 @@ class GeoIpConfig(AppConf):
     """ GeoIP configuration """
 
     #: A reference to a :ref:`model <location_model>` that stores custom geography, specific to application.
-    LOCATION_MODEL = 'django_geoip.models.GeoLocationFascade'
+    LOCATION_MODEL = 'django_geoip.models.GeoLocationFacade'
 
     #: Persistent storage class for user location
     # (LocationCookieStorage or LocationDummyStorage are available).

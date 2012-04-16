@@ -14,9 +14,9 @@ and ``us.site.com`` for american ones. For european users in will remain ``www.s
    Let's assume we have defined this custom location model::
 
         # app/models.py
-        from django_geoip.models import Country, GeoLocationFascade
+        from django_geoip.models import Country, GeoLocationFacade
 
-        class Location(GeoLocationFascade):
+        class Location(GeoLocationFacade):
             slug = models.SlugField('Site kwarg')
             country = model.ForeignKey(Country)
 

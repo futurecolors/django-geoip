@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.5dev (2012-04)
+------------------
+
+* ``GeoLocationFascade`` renamed to ``GeoLocationFacade``, old name will work till 0.3
+
+
 0.2.4 (2012-04-15)
 ------------------
 

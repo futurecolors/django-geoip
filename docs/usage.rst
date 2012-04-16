@@ -72,7 +72,7 @@ specific to your own app.
 Creating custom location model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create a django model, that inherits from ``django_geoip.models.GeoLocationFascade``.
+Create a django model, that inherits from ``django_geoip.models.GeoLocationFacade``.
 It might be a `proxy model`_ that doesn't require a separate database table, but it
 might be handy in many cases.
 
@@ -99,9 +99,9 @@ Location should implement following classmethods:
 Example of custom location model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Very basic implementation of ``GeoLocationFascade`` for demonstration purpose::
+Very basic implementation of ``GeoLocationFacade`` for demonstration purpose::
 
-    class MyCustomLocation(GeoLocationFascade):
+    class MyCustomLocation(GeoLocationFacade):
         """ Location is almost equivalent of geographic City.
             Major difference is that only locations
             from this model are returned by high-level API, so you can

@@ -3,7 +3,8 @@ import struct
 import socket
 from django.test import TestCase
 from django_any.models import any_model
-from django_geoip.models import IpRange, Region, Country, City, GeoLocationFascade
+import warnings
+from django_geoip.models import IpRange, Region, Country, City, GeoLocationFacade, GeoLocationFascade
 
 
 class IpRangeTest(TestCase):
@@ -32,12 +33,36 @@ class IpRangeTest(TestCase):
         self.assertEqual(ip_range.city.region.country, self.country)
 
 
-class GeoFascadeTest(TestCase):
+class GeoFacadeTest(TestCase):
 
     def test_bad_subclass_doesnt_implement(self):
-        class MyFascade(GeoLocationFascade):
+        class MyFacade(GeoLocationFacade):
 
+            @classmethod
             def get_by_ip_range(cls, ip_range):
                 return None
 
-        self.assertRaises(TypeError, MyFascade)
+        self.assertRaises(TypeError, MyFacade)
+
+
+    def test_oldname_is_deprecated(self):
+        class OldFascade(GeoLocationFascade):
+
+            @classmethod
+            def get_by_ip_range(cls, ip_range):
+                return None
+
+            @classmethod
+            def get_default_location(cls):
+                return None
+
+            @classmethod
+            def get_available_locations(cls):
+                return None
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            OldFascade()
+            assert len(w) == 1
+            assert issubclass(w[-1].category, DeprecationWarning)
+            assert "renamed" in unicode(w[-1].message)

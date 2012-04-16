@@ -48,7 +48,7 @@ In order to make :ref:`user's location detection automatic <highlevel>` several 
         ...
     )
 
-* Provide a custom :ref:`location model <location_model>` (inherited from ``django_geoip.models.GeoLocationFascade``)
+* Provide a custom :ref:`location model <location_model>` (inherited from ``django_geoip.models.GeoLocationFacade``)
 
 * Specify this model in :ref:`settings`::
 
