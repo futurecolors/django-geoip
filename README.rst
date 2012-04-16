@@ -1,7 +1,7 @@
 Django GeoIP
 ============
 
-.. image:: https://secure.travis-ci.org/coagulant/django-geoip.png?branch=dev
+.. image:: https://secure.travis-ci.org/futurecolors/django-geoip.png?branch=dev
 
 App to figure out where your visitors are from by their IP address.
 
