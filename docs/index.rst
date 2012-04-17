@@ -34,8 +34,8 @@ You can grab latest code on dev branch at Github_.
 
 Feel free to submit issues_, pull requests are also welcome.
 
-.. _Github: https://github.com/coagulant/django-geoip
-.. _issues: https://github.com/coagulant/django-geoip/issues
+.. _Github: https://github.com/futurecolors/django-geoip
+.. _issues: https://github.com/futurecolors/django-geoip/issues
 
 Tests
 -----
