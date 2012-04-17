@@ -47,7 +47,7 @@ Tests
 
 You can run testsuite this way::
 
-    python manage.py runtests.py
+    python runtests.py
 
 :ref:`More on tests <tests>`
 
