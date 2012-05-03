@@ -14,8 +14,12 @@ Right now django-geoip supports only ipgeobase geography, which consist of follo
 entities: Country, Region, City. Database maintains normalized relationships between
 all entities, i.e. Country has many Regions, Region has many Cities.
 
+.. image:: images/database.png
+   :alt: Database scheme
+
 .. automodule:: django_geoip.models
    :members: Country, Region, City
+
 
 .. _iprange:
 
