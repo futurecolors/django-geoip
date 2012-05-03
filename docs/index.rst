@@ -14,6 +14,10 @@ Optional :ref:`high-level API <highlevel>` provides user location in request obj
 Contents
 --------
 
+.. image:: images/geopony.png
+   :alt: Django GeoIP Pony
+   :align: right
+
 .. toctree::
   :maxdepth: 1
 
