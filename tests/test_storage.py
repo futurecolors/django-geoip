@@ -69,17 +69,12 @@ class LocationCookieStorageTest(TestCase):
     @patch.object(settings, 'GEOIP_COOKIE_DOMAIN', '.testserver.local')
     def test_get_cookie_domain_from_settings(self):
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        self.assertEqual(storage._get_cookie_domain(), '.testserver.local')
+        self.assertEqual(storage.get_cookie_domain(), '.testserver.local')
 
-    def test_get_cookie_domain_remove_first_part(self):
+    def test_get_cookie_domain_no_settings(self):
         self.request.get_host = Mock(return_value='my.localserver.tld')
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        self.assertEqual(storage._get_cookie_domain(), '.localserver.tld')
-
-    def test_get_cookie_domain_cant_find_first_part(self):
-        self.request.get_host = Mock(return_value=None)
-        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
-        self.assertEqual(storage._get_cookie_domain(), None)
+        self.assertEqual(storage.get_cookie_domain(), None)
 
 
 class LocationDummyStorageTest(TestCase):

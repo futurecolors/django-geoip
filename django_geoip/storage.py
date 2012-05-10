@@ -65,23 +65,17 @@ class LocationCookieStorage(BaseLocationStorage):
         if force or self._should_update_cookie(location.id):
             self._do_set(location.id)
 
-    def _get_cookie_domain(self):
-        """
-            TODO: More clever domain detection for common cookies
-        """
+    def get_cookie_domain(self):
         if settings.GEOIP_COOKIE_DOMAIN:
             return settings.GEOIP_COOKIE_DOMAIN
-        try:
-            current_host = self.request.get_host()
-            return current_host[current_host.index('.'):]
-        except Exception:
+        else:
             return None
 
     def _do_set(self, value):
         self.response.set_cookie(
             key=settings.GEOIP_COOKIE_NAME,
             value=value,
-            domain=self._get_cookie_domain(),
+            domain=self.get_cookie_domain(),
             expires=datetime.utcnow() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
 
     def _should_update_cookie(self, new_value):
