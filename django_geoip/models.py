@@ -161,8 +161,8 @@ class GeoLocationFascade(GeoLocationFacade):
 
     def __init__(self, *args, **kwargs):
         warnings.warn(
-            _("GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
-              "Alias will be removed in 0.3"),
+            "GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
+            "Alias will be removed in 0.3",
             DeprecationWarning
         )
         super(GeoLocationFascade, self).__init__(*args, **kwargs)
