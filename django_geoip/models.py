@@ -159,13 +159,13 @@ class GeoLocationFacade(models.Model):
 class GeoLocationFascade(GeoLocationFacade):
     """ Old alias with a typo """
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         warnings.warn(
             _("GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
               "Alias will be removed in 0.3"),
             DeprecationWarning
         )
-        super(GeoLocationFascade, self).__init__(**kwargs)
+        super(GeoLocationFascade, self).__init__(*args, **kwargs)
 
     class Meta:
         abstract = True
