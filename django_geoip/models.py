@@ -166,3 +166,6 @@ class GeoLocationFascade(GeoLocationFacade):
             DeprecationWarning
         )
         super(GeoLocationFascade, self).__init__(**kwargs)
+
+    class Meta:
+        abstract = True

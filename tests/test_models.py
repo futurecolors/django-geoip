@@ -45,6 +45,13 @@ class GeoFacadeTest(TestCase):
         self.assertRaises(TypeError, MyFacade)
 
 
+    def test_facade_is_abstract_django_model(self):
+        old_fascade = GeoLocationFascade
+        facade = GeoLocationFacade
+        self.assertEqual(facade._meta.abstract, True)
+        self.assertEqual(old_fascade._meta.abstract, True)
+
+
     def test_oldname_is_deprecated(self):
         class OldFascade(GeoLocationFascade):
 

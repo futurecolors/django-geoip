@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.6dev (2012-05-10)
+---------------------
+
+* Fixed a bug, introduced in 0.2.5, causing old facade name not work as expected.
+
+
 0.2.5 (2012-04-17)
 ------------------
 
