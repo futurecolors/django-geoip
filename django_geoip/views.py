@@ -23,7 +23,7 @@ def set_location(request):
         next = '/'
     response = http.HttpResponseRedirect(next)
     if request.method == 'POST':
-        location_id = request.POST.get('location_id', None)
+        location_id = request.POST.get('location_id', None) or request.POST.get('location', None)
         if location_id:
             try:
                 location = get_class(settings.GEOIP_LOCATION_MODEL).objects.get(pk=location_id)

@@ -37,6 +37,11 @@ class SetLocationTest(TestCase):
         self.assertEqual(response.cookies[settings.GEOIP_COOKIE_NAME].value, str(self.location.id))
         self.assertRedirects(response, 'http://testserver/')
 
+    def test_alternative_post_name(self):
+        response = self.client.post(self.url, data={'location': self.location.id})
+        self.assertEqual(response.cookies[settings.GEOIP_COOKIE_NAME].value, str(self.location.id))
+        self.assertRedirects(response, 'http://testserver/')
+
     def test_post_fake_location(self):
         response = self.client.post(self.url, data={'location_id': self.location.id+1})
         self.assertFalse(settings.GEOIP_COOKIE_NAME in response.cookies)

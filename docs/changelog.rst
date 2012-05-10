@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.2.6dev (2012-05-10)
----------------------
+0.2.6 (2012-05-10)
+------------------
 
 * Fixed a bug, introduced in 0.2.5, causing old facade name not work as expected.
+* `set_location` view now accepts both `location` and `location_id`
 
 
 0.2.5 (2012-04-17)
