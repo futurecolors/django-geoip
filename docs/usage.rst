@@ -47,7 +47,7 @@ user's location should be accessible via ``request`` object::
     def my_view(request):
         """ Passing location into template """
         ...
-        context['location] = request.location
+        context['location'] = request.location
         ...
 
 ``request.location`` is an instance of a custom model that you're required to create on your own
