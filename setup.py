@@ -14,7 +14,7 @@ tests_require = [
 
 setup(
     name='django-geoip',
-    version='0.2.6',
+    version='0.2.7dev',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
     packages=find_packages(exclude=("tests")),
@@ -30,7 +30,7 @@ setup(
     test_suite = "runtests.runtests",
     extras_require={'test': tests_require},
     classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',

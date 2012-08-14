@@ -13,7 +13,7 @@ To update your database with fresh entries
 
 
 .. warning::
-    This is irreversible opration, do not use on production!
+    This is irreversible operation, do not use on production!
 
     If you wish to clear all geodata prior the sync
     (deletes all Cities, Regions, Countries and IpRanges)::

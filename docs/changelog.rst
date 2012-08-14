@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.7dev (2012-08-??)
+---------------------
+* Fixed country names to be verbal names rather than iso3166 codes
+* Minor docs improvements
+
+
 0.2.6 (2012-05-10)
 ------------------
 
