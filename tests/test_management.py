@@ -126,7 +126,13 @@ class IpGeoBaseTest(TestCase):
         command = IpGeobase()
         cities_info = command._update_geography(self.countries, self.regions, self.cities)
 
-        self.assertEqual(set(Country.objects.all().values_list('code', flat=True)), self.countries)
+        check_against_countries = [
+            {'code':u'FR', 'name':u'France'},
+            {'code':u'UA', 'name':u'Ukraine'},
+            {'code':u'RU', 'name':u'Russian Federation'}
+        ]
+
+        self.assertItemsEqual(Country.objects.all().values('code', 'name'), check_against_countries)
         self.assertEqual(list(Region.objects.all().values('name', 'country__code')), self.regions)
         self.assertEqual(list(City.objects.all().values('name', 'id', 'region__name')), self.cities)
 

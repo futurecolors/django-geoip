@@ -9,6 +9,7 @@ from django.conf import settings
 import logging
 from progressbar import ProgressBar
 from progressbar.widgets import Percentage, Bar
+from django_geoip.management.iso3166_1 import ISO_CODES
 
 from django_geoip.models import IpRange, City, Region, Country
 
@@ -121,7 +122,7 @@ class IpGeobase(object):
         }
         for country_code in countries:
             if country_code not in existing['countries']:
-                Country.objects.create(code=country_code, name=country_code)
+                Country.objects.create(code=country_code, name=ISO_CODES.get(country_code, country_code))
         for entry in regions:
             if entry not in existing['regions']:
                 Region.objects.create(name=entry['name'], country_id=entry['country__code'])
