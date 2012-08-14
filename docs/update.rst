@@ -11,8 +11,15 @@ To update your database with fresh entries
 
     python manage.py geoip_update
 
-If you wish to clear all geodata prior the sync
-(deletes all Cities, Regions, Countries and IpRanges)::
 
-    python manage.py geoip_update --clear
+.. warning::
+    This is irreversible opration, do not use on production!
 
+    If you wish to clear all geodata prior the sync
+    (deletes all Cities, Regions, Countries and IpRanges)::
+
+        python manage.py geoip_update --clear
+
+
+If you're having troubles with MySQL during database update,
+setting ``max_allowed_packet`` to a higher value might help.
