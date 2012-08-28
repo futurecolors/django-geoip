@@ -1,11 +1,12 @@
 Changelog
 =========
 
-0.2.7dev (2012-08-??)
+0.2.7 (2012-08-28)
 ---------------------
 * Fixed country names to be verbal names rather than iso3166 codes
 * Minor docs improvements
 * Fixed handling of invalid ips passed to geoip
+
 
 0.2.6 (2012-05-10)
 ------------------
