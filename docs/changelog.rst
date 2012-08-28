@@ -5,14 +5,14 @@ Changelog
 ---------------------
 * Fixed country names to be verbal names rather than iso3166 codes
 * Minor docs improvements
-
+* Fixed handling of invalid ips passed to geoip
 
 0.2.6 (2012-05-10)
 ------------------
 
 * Fixed a bug, introduced in 0.2.5, causing old facade name not work as expected.
-* `set_location` view now accepts both `location` and `location_id`.
-* ***BACKWARDS INCOMPATIBLE*** Removed magic `_get_cookie_domain` behavior in favor of configuring `GEOIP_COOKIE_DOMAIN`.
+* ``set_location`` view now accepts both ``location`` and ``location_id``.
+* ***BACKWARDS INCOMPATIBLE*** Removed magic ``_get_cookie_domain`` behavior in favor of configuring ``GEOIP_COOKIE_DOMAIN``.
 
 
 0.2.5 (2012-04-17)

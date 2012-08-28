@@ -18,6 +18,9 @@ class IpRangeTest(TestCase):
         self.assertEqual(ip_range, self.range_contains)
         self.assertRaises(IpRange.DoesNotExist, IpRange.objects.by_ip, '127.0.0.1')
 
+    def test_invalid_ip(self):
+        self.assertRaises(IpRange.DoesNotExist, IpRange.objects.by_ip, 'wtf')
+
     def test_relations(self):
         self.country = any_model(Country)
         self.region = any_model(Region, country=self.country)

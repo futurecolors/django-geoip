@@ -72,13 +72,17 @@ class IpRangeManager(models.Manager):
     def by_ip(self, ip):
         """ Find the smallest range containing the given IP.
         """
-        number = inet_aton(ip)
+        try:
+            number = inet_aton(ip)
+        except Exception:
+            raise IpRange.DoesNotExist
+
         try:
             return super(IpRangeManager, self).get_query_set()\
                                               .filter(start_ip__lte=number, end_ip__gte=number)\
                                               .order_by('end_ip', '-start_ip')[0]
         except IndexError:
-            raise IpRange.DoesNotExist()
+            raise IpRange.DoesNotExist
 
 
 class IpRange(models.Model):
