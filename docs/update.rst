@@ -21,5 +21,7 @@ To update your database with fresh entries
         python manage.py geoip_update --clear
 
 
-If you're having troubles with MySQL during database update,
-setting ``max_allowed_packet`` to a higher value might help.
+.. note::
+    If you're having ``2006, 'MySQL server has gone away'`` error during database update,
+    setting ``max_allowed_packet`` to a higher value might help.
+    E.g. ``max_allowed_packet=16M``
