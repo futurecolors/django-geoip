@@ -14,7 +14,7 @@ tests_require = [
 
 setup(
     name='django-geoip',
-    version='0.2.8dev',
+    version='0.2.8',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
     packages=find_packages(exclude=("tests")),
