@@ -57,6 +57,12 @@ class LocationCookieStorageTest(TestCase):
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertTrue(storage._should_update_cookie(new_value=10))
 
+    @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
+    def test_malicious_cookie_is_no_problem(self):
+        self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = "wtf"
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
+        self.assertEqual(storage.get(), None)
+
     @patch('django_geoip.storage.datetime')
     def test_do_set(self, mock):
         mock.utcnow.return_value = datetime(2012, 1, 1, 0, 0, 0)
@@ -91,4 +97,3 @@ class LocationDummyStorageTest(TestCase):
         storage = LocationDummyStorage(request=self.request, response=HttpResponse())
         fake_location = Mock()
         storage.set(fake_location)
-

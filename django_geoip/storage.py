@@ -55,7 +55,7 @@ class LocationCookieStorage(BaseLocationStorage):
         if location_id:
             try:
                 return self._get_by_id(location_id)
-            except ObjectDoesNotExist:
+            except (ObjectDoesNotExist, ValueError):
                 pass
         return None
 
