@@ -8,12 +8,12 @@ tests_require = [
     'Django>=1.2',
     'django-nose==1.0',
     'unittest2',
-    'mock==0.7.2',
+    'mock==1.0.1',
 ]
 
 setup(
     name='django-geoip',
-    version='0.2.8',
+    version='0.3dev',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
     packages=find_packages(exclude=("tests")),
@@ -21,8 +21,12 @@ setup(
     license='MIT',
     description="App to figure out where your visitors are from by their IP address.",
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
+    dependency_links=[
+        'https://github.com/rafales/django-appconf/archive/feature/py3-support.zip#egg=django-appconf',
+        'https://github.com/coagulant/progressbar-python3/archive/master.zip#egg=progressbar',
+    ],
     install_requires=[
-        'django-appconf==0.4.1',
+        'django-appconf==0.5',
         'progressbar==2.3',
     ],
     tests_require=tests_require,
