@@ -12,5 +12,5 @@ else:
 
 SECRET_KEY = '_'
 ROOT_URLCONF = 'test_app.urls'
-INSTALLED_APPS = ('django_nose', 'django_geoip', 'test_app')
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+INSTALLED_APPS = ('django_geoip', 'test_app')
+TEST_RUNNER = 'discover_runner.DiscoverRunner'

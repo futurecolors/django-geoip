@@ -7,7 +7,6 @@ from django.conf import settings
 from django_geoip.management.ipgeobase import IpGeobase
 from django_geoip.models import City, Region, Country, IpRange
 from mock import patch
-from nose.plugins.attrib import attr
 
 
 TEST_STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
@@ -157,7 +156,7 @@ class IpGeoBaseTest(TestCase):
             1057: 2,
             1058: 2,
             2176: 3,
-            }
+        }
         for region in self.regions:
             Region.objects.create(name=region['name'], country_id=region['country__code'])
         for city in self.cities:
@@ -172,9 +171,9 @@ class IpGeoBaseTest(TestCase):
 
     def test_update_cidr(self):
         check_against_ranges = [
-                {'start_ip': 33554432, 'end_ip': 34603007, 'country_id': 'FR', 'city_id': None, 'region_id': None},
-                {'start_ip': 37249024, 'end_ip': 37251071, 'country_id': 'UA', 'city_id': 1, 'region_id': 1},
-                {'start_ip': 37355520, 'end_ip': 37392639, 'country_id': 'RU', 'city_id': 2176,'region_id': 3},
+            {'start_ip': 33554432, 'end_ip': 34603007, 'country_id': 'FR', 'city_id': None, 'region_id': None},
+            {'start_ip': 37249024, 'end_ip': 37251071, 'country_id': 'UA', 'city_id': 1, 'region_id': 1},
+            {'start_ip': 37355520, 'end_ip': 37392639, 'country_id': 'RU', 'city_id': 2176,'region_id': 3},
         ]
 
         backend = IpGeobase()
@@ -186,12 +185,4 @@ class IpGeoBaseTest(TestCase):
         backend._update_cidr(self.cidr)
 
         self.assertItemsEqual(IpRange.objects.all().values('start_ip', 'end_ip', 'country_id', 'city_id', 'region_id'),
-            check_against_ranges)
-
-
-@attr('system')
-class IpGeoBaseSystemTest(TestCase):
-
-    def test_whole_management_command(self):
-        from django.core import management
-        management.call_command('geoip_update', verbosity=0, interactive=False)
+                              check_against_ranges)

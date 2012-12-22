@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.test import TestCase
-from django_any.test import Client
 from test_app.models import MyCustomLocation
 from mock import patch
 from tests.factory import create_custom_location
@@ -10,7 +9,6 @@ from tests.factory import create_custom_location
 class SetLocationTest(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.url = '/set_location/'
         self.location = create_custom_location(MyCustomLocation)
 
