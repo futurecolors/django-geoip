@@ -9,7 +9,6 @@ tests_require = [
     'django-nose==1.0',
     'unittest2',
     'mock==0.7.2',
-    'django-whatever>=0.2.3',
 ]
 
 setup(

@@ -3,13 +3,12 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from django_any.models import any_model
-from django.utils import unittest
 from django_geoip.base import Locator
-from django_geoip.models import IpRange
+from django_geoip.models import IpRange, City
 from test_app.models import MyCustomLocation
 
 from mock import patch, Mock
+from tests.factory import create_custom_location, create_ip_range
 
 
 class LocatorTest(TestCase):
@@ -29,7 +28,7 @@ class LocatorTest(TestCase):
         self.assertEqual(self.locator._get_stored_location(), None)
 
     def test_get_stored_location_ok(self):
-        location = any_model(MyCustomLocation)
+        location = create_custom_location(MyCustomLocation, name='location1')
         self.locator.request.COOKIES['geoip_location_id'] = location.id
         self.assertEqual(self.locator._get_stored_location(), location)
 
@@ -74,7 +73,7 @@ class LocatorTest(TestCase):
     @patch('test_app.models.MyCustomLocation.get_by_ip_range')
     @patch('test_app.models.MyCustomLocation.get_default_location')
     def test_get_corresponding_location_ok(self, mock_get_default_location, mock_get_by_ip_range):
-        range = any_model(IpRange)
+        range = create_ip_range()
         self.locator._get_corresponding_location(range)
         mock_get_by_ip_range.assert_called_once_with(range)
         self.assertFalse(mock_get_default_location.called)

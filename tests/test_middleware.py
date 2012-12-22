@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
+from mock import patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from django_geoip import middleware
 from django.http import HttpResponse
-from django_any.models import any_model
-from django_any.test import Client
-from mock import patch
+
 import django_geoip
-from django_geoip.base import  Locator
+from django_geoip import middleware
+from django_geoip.base import Locator
 from django_geoip.models import City
 from django_geoip.storage import LocationCookieStorage
+
 from test_app.models import MyCustomLocation
+from tests.factory import any_city, create_custom_location
 
 
 class MiddlewareTest(TestCase):
     def setUp(self, *args, **kwargs):
-        self.client = Client()
         self.factory = RequestFactory()
         self.request = self.factory.get('/', **{'REMOTE_ADDR': '6.6.6.6'})
         self.middleware = django_geoip.middleware.LocationMiddleware()
@@ -44,7 +45,7 @@ class MiddlewareTest(TestCase):
     def test_process_response_ok(self, mock, mock_location_set):
         mock.return_value = None
         base_response = HttpResponse()
-        self.get_location_mock.return_value = mycity = any_model(City)
+        self.get_location_mock.return_value = mycity = any_city()
         self.middleware.process_request(self.request)
         self.middleware.process_response(self.request, base_response)
         mock.assert_called_once_with(request=self.request, response=base_response)
@@ -67,13 +68,11 @@ class MiddlewareTest(TestCase):
 
 @unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
 class GetLocationTest(unittest.TestCase):
-
     def setUp(self, *args, **kwargs):
-        self.client = Client()
         self.factory = RequestFactory()
 
-        any_model(MyCustomLocation, pk=1, city__name='city1')
-        self.my_location = any_model(MyCustomLocation, id=200, city__name='city200')
+        create_custom_location(MyCustomLocation, city__name='city1')
+        self.my_location = create_custom_location(MyCustomLocation, id=200, city__name='city200')
 
     def tearDown(self, *args, **kwargs):
         City.objects.all().delete()

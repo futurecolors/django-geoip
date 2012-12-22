@@ -3,10 +3,10 @@ from datetime import datetime
 from django.conf import settings
 from django.test import TestCase
 from django.http import HttpResponse, HttpRequest
-from django_any.models import any_model
 from mock import patch, Mock
 from django_geoip.storage import LocationCookieStorage, LocationDummyStorage, BaseLocationStorage
 from test_app.models import MyCustomLocation
+from tests.factory import create_custom_location
 
 
 class BaseLocationStorageTest(TestCase):
@@ -24,7 +24,7 @@ class BaseLocationStorageTest(TestCase):
         self.assertFalse(self.storage._validate_location(None))
         self.assertFalse(self.storage._validate_location(Mock()))
 
-        location = any_model(MyCustomLocation)
+        location = create_custom_location(MyCustomLocation)
         self.assertTrue(self.storage._validate_location(location))
 
 

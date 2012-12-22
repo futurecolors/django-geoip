@@ -8,7 +8,6 @@ env:
 install:
   - pip install -q Django==$DJANGO_VERSION
   - pip install django-nose==1.0
-  - pip install django-whatever>=0.2.3
   - python setup.py -q install
 script: python runtests.py
 branches:
