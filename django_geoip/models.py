@@ -103,8 +103,8 @@ class IpRange(models.Model):
     objects = IpRangeManager()
 
     class Meta:
-        verbose_name = _(u'IP range')
-        verbose_name_plural = _(u"IP ranges")
+        verbose_name = _('IP range')
+        verbose_name_plural = _("IP ranges")
 
 
 class abstractclassmethod(classmethod):
@@ -155,21 +155,6 @@ class GeoLocationFacade(models.Model):
         :return: GeoLocationFacade
         """
         return NotImplemented
-
-    class Meta:
-        abstract = True
-
-
-class GeoLocationFascade(GeoLocationFacade):
-    """ Old alias with a typo """
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
-            "Alias will be removed in 0.3",
-            DeprecationWarning
-        )
-        super(GeoLocationFascade, self).__init__(*args, **kwargs)
 
     class Meta:
         abstract = True

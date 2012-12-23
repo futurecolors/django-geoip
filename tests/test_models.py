@@ -4,7 +4,7 @@ import socket
 import warnings
 
 from django.test import TestCase
-from django_geoip.models import IpRange, GeoLocationFacade, GeoLocationFascade
+from django_geoip.models import IpRange, GeoLocationFacade
 
 from tests import factory
 from tests.factory import create_ip_range
@@ -50,30 +50,5 @@ class GeoFacadeTest(TestCase):
         self.assertRaises(TypeError, MyFacade)
 
     def test_facade_is_abstract_django_model(self):
-        old_fascade = GeoLocationFascade
         facade = GeoLocationFacade
         self.assertEqual(facade._meta.abstract, True)
-        self.assertEqual(old_fascade._meta.abstract, True)
-
-
-    def test_oldname_is_deprecated(self):
-        class OldFascade(GeoLocationFascade):
-
-            @classmethod
-            def get_by_ip_range(cls, ip_range):
-                return None
-
-            @classmethod
-            def get_default_location(cls):
-                return None
-
-            @classmethod
-            def get_available_locations(cls):
-                return None
-
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            OldFascade()
-            assert len(w) == 1
-            assert issubclass(w[-1].category, DeprecationWarning)
-            assert "renamed" in unicode(w[-1].message)
