@@ -11,3 +11,8 @@ install:
   - pip install -r tests/requirements.txt
   - python setup.py -q install
 script: python manage.py test
+
+matrix:
+  exclude:
+    - python: 3.2
+      env: DJANGO=1.4.2
