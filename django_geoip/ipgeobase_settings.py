@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from appconf import AppConf
 
+
 class IpGeoBaseConfig(AppConf):
     # URL, where to download ipgeobase file from
     SOURCE_URL = 'http://ipgeobase.ru/files/db/Main/geo_files.zip'

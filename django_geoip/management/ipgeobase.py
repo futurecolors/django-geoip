@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import tempfile
+import logging
 import zipfile
-import urllib2
-from cStringIO import StringIO
+try:
+    import urllib.request as urllib
+except ImportError:
+    import urllib2 as urllib
+from django.utils.six.moves import cStringIO
 from decimal import Decimal
 
 from django.conf import settings
-import logging
 from progressbar import ProgressBar
 from progressbar.widgets import Percentage, Bar
 from django_geoip.management.iso3166_1 import ISO_CODES
@@ -42,8 +45,8 @@ class IpGeobase(object):
                                               cidr_info['city_country_mapping'])
         self.logger.info('Updating locations...')
         self._update_geography(cidr_info['countries'],
-            city_info['regions'],
-            city_info['cities'])
+                               city_info['regions'],
+                               city_info['cities'])
         self.logger.info('Updating CIDR...')
         self._update_cidr(cidr_info)
 
@@ -57,12 +60,12 @@ class IpGeobase(object):
             file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
             file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
             return {'cities': file_cities, 'cidr': file_cidr}
-        except urllib2.URLError:
+        except urllib.URLError:
             raise
 
     def _download_url_to_string(self, url):
-        f = urllib2.urlopen(url)
-        buffer = StringIO(f.read())
+        f = urllib.urlopen(url)
+        buffer = cStringIO(f.read())
         f.close()
         return buffer
 
@@ -127,7 +130,7 @@ class IpGeobase(object):
             if entry not in existing['regions']:
                 Region.objects.create(name=entry['name'], country_id=entry['country__code'])
         for entry in cities:
-            if long(entry['id']) not in existing['cities']:
+            if int(entry['id']) not in existing['cities']:
                 region = Region.objects.get(name=entry['region__name'])
                 City.objects.create(id=entry['id'], name=entry['name'], region=region,
                                     latitude=entry.get('latitude'), longitude=entry.get('longitude'))

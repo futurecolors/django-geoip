@@ -10,7 +10,7 @@ setup(
     version='0.3dev',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
-    packages=find_packages(exclude=("tests")),
+    packages=find_packages(exclude="tests"),
     url='https://github.com/futurecolors/django-geoip',
     license='MIT',
     description="App to figure out where your visitors are from by their IP address.",

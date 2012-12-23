@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from appconf import AppConf
 
+
 class GeoIpConfig(AppConf):
     """ GeoIP configuration """
 

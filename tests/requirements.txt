@@ -1,2 +1,2 @@
-git+https://github.com/rafales/django-discover-runner.git#egg=django-discover-runner
+https://github.com/rafales/django-discover-runner/archive/py3-support.zip
 mock==1.0.1

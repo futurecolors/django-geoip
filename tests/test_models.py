@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import struct
 import socket
-import warnings
 
 from django.test import TestCase
 from django_geoip.models import IpRange, GeoLocationFacade

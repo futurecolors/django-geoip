@@ -4,6 +4,7 @@ import struct
 from abc import ABCMeta
 from django.db import models
 from django.db.models.base import ModelBase
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
@@ -119,12 +120,17 @@ class abstractclassmethod(classmethod):
 class AbsractModel(ABCMeta, ModelBase):
     pass
 
+# 2.7 ok
+#class GeoLocationFacade(models.Model):
 
-class GeoLocationFacade(models.Model):
+# pk3.2 ok
+#class GeoLocationFacade(models.Model, metaclass=AbsractModel):
+
+class GeoLocationFacade(six.with_metaclass(AbsractModel), models.Model):
     """ Interface for custom geographic models.
         Model represents a Facade pattern for concrete GeoIP models.
     """
-    __metaclass__ = AbsractModel
+#    __metaclass__ = AbsractModel
 
     @abstractclassmethod
     def get_by_ip_range(cls, ip_range):

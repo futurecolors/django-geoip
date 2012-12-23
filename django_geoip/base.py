@@ -9,6 +9,7 @@ from django_geoip.utils import get_class
 location_model = SimpleLazyObject(
     lambda: get_class(settings.GEOIP_LOCATION_MODEL))
 
+
 storage_class = get_class(settings.GEOIP_STORAGE_CLASS)
 
 
