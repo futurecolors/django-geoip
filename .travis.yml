@@ -3,6 +3,7 @@ python:
   - 2.6
   - 2.7
   - 3.2
+  - 3.3
 env:
   - DJANGO=1.4.2
   - DJANGO=1.5b2
@@ -15,4 +16,7 @@ script: python manage.py test
 matrix:
   exclude:
     - python: 3.2
+      env: DJANGO=1.4.2
+  exclude:
+    - python: 3.3
       env: DJANGO=1.4.2
