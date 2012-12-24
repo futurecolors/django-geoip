@@ -6,12 +6,13 @@ from django_geoip.management.ipgeobase import IpGeobase
 
 
 class Command(BaseCommand):
+
     help = 'Updates django-geoip data stored in db'
     option_list = BaseCommand.option_list + (
         make_option('--clear',
             action='store_true',
             default=False,
-            help=u"Clear tables prior import",
+            help="Clear tables prior import"
         ),
     )
 

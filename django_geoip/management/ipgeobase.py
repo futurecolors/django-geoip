@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
+import io
 import tempfile
 import logging
 import zipfile
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib2 as urllib
-from django.utils.six.moves import cStringIO
+from django.utils.six import StringIO, BytesIO
+import requests
 from decimal import Decimal
 
 from django.conf import settings
+from django.utils import six
 from progressbar import ProgressBar
 from progressbar.widgets import Percentage, Bar
 from django_geoip.management.iso3166_1 import ISO_CODES
@@ -40,8 +39,8 @@ class IpGeobase(object):
         return self.files
 
     def sync_database(self):
-        cidr_info = self._process_cidr_file(open(self.files['cidr'], 'r'))
-        city_info = self._process_cities_file(open(self.files['cities'], 'r'),
+        cidr_info = self._process_cidr_file(io.open(self.files['cidr'], encoding=settings.IPGEOBASE_FILE_ENCODING))
+        city_info = self._process_cities_file(io.open(self.files['cities'], encoding=settings.IPGEOBASE_FILE_ENCODING),
                                               cidr_info['city_country_mapping'])
         self.logger.info('Updating locations...')
         self._update_geography(cidr_info['countries'],
@@ -52,29 +51,27 @@ class IpGeobase(object):
 
     def _download_extract_archive(self, url):
         """ Returns dict with 2 extracted filenames """
-        try:
-            self.logger.info('Downloading zipfile from ipgeobase.ru...')
-            temp_dir = tempfile.mkdtemp()
-            archive = zipfile.ZipFile(self._download_url_to_string(url))
-            self.logger.info('Extracting files...')
-            file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
-            file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
-            return {'cities': file_cities, 'cidr': file_cidr}
-        except urllib.URLError:
-            raise
+        self.logger.info('Downloading zipfile from ipgeobase.ru...')
+        temp_dir = tempfile.mkdtemp()
+        archive = zipfile.ZipFile(self._download_url_to_string(url))
+        self.logger.info('Extracting files...')
+        file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
+        file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
+        return {'cities': file_cities, 'cidr': file_cidr}
 
     def _download_url_to_string(self, url):
-        f = urllib.urlopen(url)
-        buffer = cStringIO(f.read())
-        f.close()
+        r = requests.get(url)
+        if six.PY3:
+            return BytesIO(r.content)
+        else:
+            return six.StringIO(r.content)
         return buffer
 
     def _line_to_dict(self, file, field_names):
         """ Converts file line into dictonary """
         for line in file:
-            decoded_line = line.decode(settings.IPGEOBASE_FILE_ENCODING)
             delimiter = settings.IPGEOBASE_FILE_FIELDS_DELIMITER
-            yield self._extract_data_from_line(decoded_line, field_names, delimiter)
+            yield self._extract_data_from_line(line, field_names, delimiter)
 
     def _extract_data_from_line(self, line, field_names=None, delimiter="\t"):
         return dict(zip(field_names, line.rstrip('\n').split(delimiter)))

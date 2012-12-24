@@ -40,6 +40,7 @@ class IpRangeTest(TestCase):
 class GeoFacadeTest(TestCase):
 
     def test_bad_subclass_doesnt_implement(self):
+
         class MyFacade(GeoLocationFacade):
 
             @classmethod

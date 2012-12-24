@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import io
 
 import os
 from django.utils import six
 
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib2 as urllib
+import requests
 from mock import patch
 from decimal import Decimal
 
@@ -25,23 +23,23 @@ class DowloadTest(TestCase):
     IPGEOBASE_ZIP_FILE_PATH = 'tests.zip'
     IPGEOBASE_MOCK_URL = 'http://futurecolors/mock.zip'
 
-    @patch.object(urllib, 'urlopen')
+    @patch.object(requests, 'get')
     def test_download_unpack(self, mock):
         self.opener = mock.return_value
-        self.opener.read.return_value = open(os.path.join(TEST_STATIC_DIR, self.IPGEOBASE_ZIP_FILE_PATH)).read()
+        self.opener.content = io.open(os.path.join(TEST_STATIC_DIR, self.IPGEOBASE_ZIP_FILE_PATH),
+                                                   mode='rb').read()
 
         result = IpGeobase()._download_extract_archive(url=self.IPGEOBASE_MOCK_URL)
 
         mock.assert_called_once_with(self.IPGEOBASE_MOCK_URL)
-        self.opener.read.assert_called_once_with()
         self.assertEqual(len(result), 2)
         self.assertTrue(result['cities'].endswith(settings.IPGEOBASE_CITIES_FILENAME))
         self.assertTrue(result['cidr'].endswith(settings.IPGEOBASE_CIDR_FILENAME))
 
-    @patch.object(urllib, 'urlopen')
+    @patch.object(requests, 'get')
     def test_download_exception(self, mock):
-        mock.side_effect = urllib.URLError('Response timeout')
-        self.assertRaises(urllib.URLError, IpGeobase()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
+        mock.side_effect = requests.exceptions.Timeout('Response timeout')
+        self.assertRaises(requests.exceptions.Timeout, IpGeobase()._download_extract_archive, self.IPGEOBASE_MOCK_URL)
 
 
 class ConvertTest(TestCase):
@@ -59,9 +57,9 @@ class ConvertTest(TestCase):
 
         backend = IpGeobase()
         generator = backend._line_to_dict(
-            file=open(os.path.join(TEST_STATIC_DIR, 'cities.txt')),
+            file=io.open(os.path.join(TEST_STATIC_DIR, 'cities.txt'), encoding=settings.IPGEOBASE_FILE_ENCODING),
             field_names=settings.IPGEOBASE_CITIES_FIELDS)
-        result = generator.next()
+        result = six.advance_iterator(generator)
         self.assertEqual(result, check_against_dict)
 
     def test_process_cidr_file(self):
@@ -102,7 +100,8 @@ class ConvertTest(TestCase):
         }
 
         backend = IpGeobase()
-        cities_info = backend._process_cities_file(open(os.path.join(TEST_STATIC_DIR, 'cities.txt')), city_country_mapping)
+        cities_info = backend._process_cities_file(io.open(os.path.join(TEST_STATIC_DIR, 'cities.txt'),
+                                                   encoding=settings.IPGEOBASE_FILE_ENCODING), city_country_mapping)
 
         self.assertEqual(cities_info['cities'], check_against['cities'])
         self.assertEqual(cities_info['regions'], check_against['regions'])
