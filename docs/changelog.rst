@@ -1,9 +1,9 @@
 Changelog
 =========
 
-0.3.0 (TBA)
------------
-* Added python 3 support (3.2 - 3.3)
+0.3.0 (2012-01-29)
+------------------
+* Added python 3 support (3.2+)
 * ***IMPORTANT*** Minimum required django 1.4.2, use version 0.2.8, if you don't want to upgrade.
 * ``GeoLocationFascade`` alias removed
 
