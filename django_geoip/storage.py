@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from exceptions import ValueError
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django_geoip.utils import get_class
+
+from .utils import get_class
 
 
 class BaseLocationStorage(object):

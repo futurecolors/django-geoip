@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+import io
 import tempfile
-import zipfile
-import urllib2
-from cStringIO import StringIO
-from decimal import Decimal
-
-from django.conf import settings
 import logging
-from progressbar import ProgressBar
-from progressbar.widgets import Percentage, Bar
-from django_geoip.management.iso3166_1 import ISO_CODES
+import zipfile
+from decimal import Decimal
+from progressbar import ProgressBar, Percentage, Bar
 
+import requests
+from django.utils.six import BytesIO
+from django.conf import settings
+from django.utils import six
+
+from .iso3166_1 import ISO_CODES
 from django_geoip.models import IpRange, City, Region, Country
 
 
@@ -37,41 +38,39 @@ class IpGeobase(object):
         return self.files
 
     def sync_database(self):
-        cidr_info = self._process_cidr_file(open(self.files['cidr'], 'r'))
-        city_info = self._process_cities_file(open(self.files['cities'], 'r'),
+        cidr_info = self._process_cidr_file(io.open(self.files['cidr'], encoding=settings.IPGEOBASE_FILE_ENCODING))
+        city_info = self._process_cities_file(io.open(self.files['cities'], encoding=settings.IPGEOBASE_FILE_ENCODING),
                                               cidr_info['city_country_mapping'])
         self.logger.info('Updating locations...')
         self._update_geography(cidr_info['countries'],
-            city_info['regions'],
-            city_info['cities'])
+                               city_info['regions'],
+                               city_info['cities'])
         self.logger.info('Updating CIDR...')
         self._update_cidr(cidr_info)
 
     def _download_extract_archive(self, url):
         """ Returns dict with 2 extracted filenames """
-        try:
-            self.logger.info('Downloading zipfile from ipgeobase.ru...')
-            temp_dir = tempfile.mkdtemp()
-            archive = zipfile.ZipFile(self._download_url_to_string(url))
-            self.logger.info('Extracting files...')
-            file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
-            file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
-            return {'cities': file_cities, 'cidr': file_cidr}
-        except urllib2.URLError:
-            raise
+        self.logger.info('Downloading zipfile from ipgeobase.ru...')
+        temp_dir = tempfile.mkdtemp()
+        archive = zipfile.ZipFile(self._download_url_to_string(url))
+        self.logger.info('Extracting files...')
+        file_cities = archive.extract(settings.IPGEOBASE_CITIES_FILENAME, path=temp_dir)
+        file_cidr = archive.extract(settings.IPGEOBASE_CIDR_FILENAME, path=temp_dir)
+        return {'cities': file_cities, 'cidr': file_cidr}
 
     def _download_url_to_string(self, url):
-        f = urllib2.urlopen(url)
-        buffer = StringIO(f.read())
-        f.close()
+        r = requests.get(url)
+        if six.PY3:
+            return BytesIO(r.content)
+        else:
+            return six.StringIO(r.content)
         return buffer
 
     def _line_to_dict(self, file, field_names):
         """ Converts file line into dictonary """
         for line in file:
-            decoded_line = line.decode(settings.IPGEOBASE_FILE_ENCODING)
             delimiter = settings.IPGEOBASE_FILE_FIELDS_DELIMITER
-            yield self._extract_data_from_line(decoded_line, field_names, delimiter)
+            yield self._extract_data_from_line(line, field_names, delimiter)
 
     def _extract_data_from_line(self, line, field_names=None, delimiter="\t"):
         return dict(zip(field_names, line.rstrip('\n').split(delimiter)))
@@ -127,7 +126,7 @@ class IpGeobase(object):
             if entry not in existing['regions']:
                 Region.objects.create(name=entry['name'], country_id=entry['country__code'])
         for entry in cities:
-            if long(entry['id']) not in existing['cities']:
+            if int(entry['id']) not in existing['cities']:
                 region = Region.objects.get(name=entry['region__name'])
                 City.objects.create(id=entry['id'], name=entry['name'], region=region,
                                     latitude=entry.get('latitude'), longitude=entry.get('longitude'))

@@ -2,15 +2,20 @@ language: python
 python:
   - 2.6
   - 2.7
+  - 3.2
+  - 3.3
 env:
-  - DJANGO_VERSION=1.3.1
-  - DJANGO_VERSION=1.4
+  - DJANGO=1.4.2
+  - DJANGO=1.5b2
 install:
-  - pip install -q Django==$DJANGO_VERSION
-  - pip install django-nose==1.0
-  - pip install django-whatever>=0.2.3
+  - pip install https://github.com/django/django/archive/${DJANGO}.zip#egg=django
+  - pip install -r tests/requirements.txt
   - python setup.py -q install
-script: python runtests.py
-branches:
-  only:
-    - dev
+script: python manage.py test
+
+matrix:
+  exclude:
+    - python: 3.2
+      env: DJANGO=1.4.2
+    - python: 3.3
+      env: DJANGO=1.4.2

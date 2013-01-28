@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.test import TestCase
-from django_any.models import any_model
-from django_any.test import Client
 from test_app.models import MyCustomLocation
 from mock import patch
+from tests.factory import create_custom_location
 
 
 class SetLocationTest(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.url = '/set_location/'
-        self.location = any_model(MyCustomLocation)
+        self.location = create_custom_location(MyCustomLocation)
 
         self.location_model_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
         self.location_model = self.location_model_patcher.start()
