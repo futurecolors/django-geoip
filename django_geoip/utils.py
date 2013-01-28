@@ -5,7 +5,6 @@ def get_class(class_string):
     Convert a string version of a function name to the callable object.
     """
     try:
-        class_string = class_string.encode('ascii')
         mod_name, class_name = get_mod_func(class_string)
         if class_name != '':
             cls = getattr(__import__(mod_name, {}, {}, ['']), class_name)

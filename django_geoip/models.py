@@ -2,13 +2,14 @@
 import socket
 import struct
 from abc import ABCMeta
+
 from django.db import models
 from django.db.models.base import ModelBase
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
-import warnings
-from django_geoip import ipgeobase_settings, geoip_settings
+from .settings import geoip_settings, ipgeobase_settings
 
 
 class Country(models.Model):
@@ -91,10 +92,10 @@ class IpRange(models.Model):
         Each range might be associated with either country (for IP ranges outside of Russia and Ukraine)
         or country, region and city together.
 
-        Ip range borders are `stored as long integers <http://publibn.boulder.ibm.com/doc_link/en_US/a_doc_lib/libs/commtrf2/inet_addr.htm>`_
-
+        Ip range borders are `stored as long integers
+        <http://publibn.boulder.ibm.com/doc_link/en_US/a_doc_lib/libs/commtrf2/inet_addr.htm>`_
     """
-    start_ip = models.BigIntegerField(_('Ip range block begining, as integer'), db_index=True)
+    start_ip = models.BigIntegerField(_('Ip range block beginning, as integer'), db_index=True)
     end_ip = models.BigIntegerField(_('Ip range block ending, as integer'), db_index=True)
     country = models.ForeignKey(Country)
     region = models.ForeignKey(Region, null=True)
@@ -103,8 +104,8 @@ class IpRange(models.Model):
     objects = IpRangeManager()
 
     class Meta:
-        verbose_name = _(u'IP range')
-        verbose_name_plural = _(u"IP ranges")
+        verbose_name = _('IP range')
+        verbose_name_plural = _("IP ranges")
 
 
 class abstractclassmethod(classmethod):
@@ -120,11 +121,10 @@ class AbsractModel(ABCMeta, ModelBase):
     pass
 
 
-class GeoLocationFacade(models.Model):
+class GeoLocationFacade(six.with_metaclass(AbsractModel), models.Model):
     """ Interface for custom geographic models.
         Model represents a Facade pattern for concrete GeoIP models.
     """
-    __metaclass__ = AbsractModel
 
     @abstractclassmethod
     def get_by_ip_range(cls, ip_range):
@@ -155,21 +155,6 @@ class GeoLocationFacade(models.Model):
         :return: GeoLocationFacade
         """
         return NotImplemented
-
-    class Meta:
-        abstract = True
-
-
-class GeoLocationFascade(GeoLocationFacade):
-    """ Old alias with a typo """
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "GeoLocationFascade has been renamed to GeoLocationFacade, please update your code."
-            "Alias will be removed in 0.3",
-            DeprecationWarning
-        )
-        super(GeoLocationFascade, self).__init__(*args, **kwargs)
 
     class Meta:
         abstract = True

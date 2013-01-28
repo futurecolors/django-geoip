@@ -3,10 +3,10 @@ from datetime import datetime
 from django.conf import settings
 from django.test import TestCase
 from django.http import HttpResponse, HttpRequest
-from django_any.models import any_model
 from mock import patch, Mock
 from django_geoip.storage import LocationCookieStorage, LocationDummyStorage, BaseLocationStorage
 from test_app.models import MyCustomLocation
+from tests.factory import create_custom_location
 
 
 class BaseLocationStorageTest(TestCase):
@@ -24,7 +24,7 @@ class BaseLocationStorageTest(TestCase):
         self.assertFalse(self.storage._validate_location(None))
         self.assertFalse(self.storage._validate_location(Mock()))
 
-        location = any_model(MyCustomLocation)
+        location = create_custom_location(MyCustomLocation)
         self.assertTrue(self.storage._validate_location(location))
 
 
@@ -65,11 +65,11 @@ class LocationCookieStorageTest(TestCase):
 
     @patch('django_geoip.storage.datetime')
     def test_do_set(self, mock):
-        mock.utcnow.return_value = datetime(2012, 1, 1, 0, 0, 0)
+        mock.utcnow.return_value = datetime(2030, 1, 1, 0, 0, 0)
         base_response = HttpResponse()
         storage = LocationCookieStorage(request=self.request, response=base_response)
         storage._do_set(10)
-        expected = ['Set-Cookie: geoip_location_id=10', 'expires=Tue, 01-Jan-2013 00:00:00 GMT']
+        expected = ['Set-Cookie: geoip_location_id=10', 'expires=Thu, 02-Jan-2031 00:00:00 GMT']
         self.assertEqual(base_response.cookies[settings.GEOIP_COOKIE_NAME].output().split('; ')[:2], expected)
 
     @patch.object(settings, 'GEOIP_COOKIE_DOMAIN', '.testserver.local')
