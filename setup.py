@@ -15,14 +15,13 @@ setup(
     license='MIT',
     description="App to figure out where your visitors are from by their IP address.",
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
-    dependency_links=[
-        'https://github.com/rafales/django-appconf/archive/feature/py3-support.zip#egg=django_appconf-0.5',
-        'https://github.com/coagulant/progressbar-python3/archive/master.zip#egg=progressbar-2.3',
-    ],
+    dependency_links=(
+       'https://github.com/coagulant/progressbar-python3/archive/master.zip#egg=progressbar-2.3dev',
+    ),
     install_requires=[
-        'django-appconf==0.5',
+        'progressbar==2.3dev',
+        'django-appconf==0.6',
         'requests==1.0.4',
-        'progressbar==2.3',
     ],
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -31,5 +30,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
     ],
 )

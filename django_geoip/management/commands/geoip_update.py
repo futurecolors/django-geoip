@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.core.management.base import BaseCommand
-from optparse import make_option
 import logging
-from django_geoip.management.ipgeobase import IpGeobase
+from optparse import make_option
+
+from django.core.management.base import BaseCommand
+from ..ipgeobase import IpGeobase
 
 
 class Command(BaseCommand):

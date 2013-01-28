@@ -3,16 +3,15 @@ import io
 import tempfile
 import logging
 import zipfile
-from django.utils.six import StringIO, BytesIO
-import requests
 from decimal import Decimal
+from progressbar import ProgressBar, Percentage, Bar
 
+import requests
+from django.utils.six import BytesIO
 from django.conf import settings
 from django.utils import six
-from progressbar import ProgressBar
-from progressbar.widgets import Percentage, Bar
-from django_geoip.management.iso3166_1 import ISO_CODES
 
+from .iso3166_1 import ISO_CODES
 from django_geoip.models import IpRange, City, Region, Country
 
 
