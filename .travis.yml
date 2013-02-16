@@ -13,7 +13,7 @@ install:
   - python setup.py -q install
 script:
   - coverage run --source=django_geoip manage.py test
-  - coveralls
+  - coveralls --verbose
 matrix:
   exclude:
     - python: 3.2
