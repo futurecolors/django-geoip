@@ -1,2 +1,3 @@
 https://github.com/rafales/django-discover-runner/archive/py3-support.zip
 mock==1.0.1
+coveralls

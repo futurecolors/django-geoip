@@ -11,8 +11,9 @@ install:
   - pip install https://github.com/django/django/archive/${DJANGO}.zip#egg=django
   - pip install -r tests/requirements.txt
   - python setup.py -q install
-script: python manage.py test
-
+script:
+  - coverage run --source=django_geoip manage.py test
+  - coveralls
 matrix:
   exclude:
     - python: 3.2
