@@ -21,6 +21,8 @@ class BaseLocationStorage(object):
         raise NotImplemented
 
     def _validate_location(self, location):
+        if location == settings.GEOIP_LOCATION_EMPTY_VALUE:
+            return True
         if not isinstance(location, self.location_model):
             return False
         try:
