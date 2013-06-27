@@ -20,5 +20,10 @@ class GeoIpConfig(AppConf):
     #: Cookie lifetime in seconds (1 year by default) for LocationCookieStorage class.
     COOKIE_EXPIRES = 31622400
 
+    #: Empty value for location, if location not found in ranges.
+    # This value must be returned in a :ref:`custom location model <location_model>`
+    # in get_default_location class method if it necessary.
+    LOCATION_EMPTY_VALUE = 0
+
     class Meta:
         prefix = 'geoip'
