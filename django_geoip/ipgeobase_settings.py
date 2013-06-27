@@ -16,5 +16,10 @@ class IpGeoBaseConfig(AppConf):
     #    1578795008	1578827775	94.26.128.0 - 94.26.255.255	RU	2287
     CIDR_FIELDS = ['start_ip', 'end_ip', 'ip_range_human', 'country_code', 'city_id']
 
+    # If need get data for some countries, but not all database.
+    # Empty list is allow all countries.
+    # For example: ['RU', 'UA']
+    ALLOWED_COUNTRIES = []
+
     class Meta:
         prefix = 'ipgeobase'
