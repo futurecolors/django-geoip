@@ -70,6 +70,23 @@ class ConvertTest(TestCase):
         self.assertEqual(cidr_info['countries'], check_against['countries'])
         self.assertEqual(cidr_info['cidr'], check_against['cidr'])
 
+    @patch.object(settings, 'IPGEOBASE_ALLOWED_COUNTRIES', ['RU', 'UA'])
+    def test_process_cidr_file_with_allowed_countries(self):
+        check_against = {
+            'cidr': [
+                    {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
+                    {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
+            ],
+            'countries': set([u'UA', u'RU']),
+            'city_country_mapping': {'2176': u'RU', '1': u'UA'}
+        }
+        backend = IpGeobase()
+        cidr_info = backend._process_cidr_file(open(os.path.join(TEST_STATIC_DIR, 'cidr_optim.txt')))
+
+        self.assertEqual(cidr_info['city_country_mapping'], check_against['city_country_mapping'])
+        self.assertEqual(cidr_info['countries'], check_against['countries'])
+        self.assertEqual(cidr_info['cidr'], check_against['cidr'])
+
 
     def test_process_cities_file(self):
         city_country_mapping = {'1': u'UA', '1057': u'RU', '2176': u'RU'}
@@ -85,6 +102,29 @@ class ConvertTest(TestCase):
             ],
             'regions': [
                     {'name':  u'Хмельницкая область', 'country__code': u'UA'},
+                    {'name':  u'Кемеровская область', 'country__code': u'RU'},
+                    {'name':  u'Ханты-Мансийский автономный округ', 'country__code': u'RU'},
+            ]
+        }
+
+        backend = IpGeobase()
+        cities_info = backend._process_cities_file(open(os.path.join(TEST_STATIC_DIR, 'cities.txt')), city_country_mapping)
+
+        self.assertEqual(cities_info['cities'], check_against['cities'])
+        self.assertEqual(cities_info['regions'], check_against['regions'])
+
+    @patch.object(settings, 'IPGEOBASE_ALLOWED_COUNTRIES', ['RU'])
+    def test_process_cities_file_with_allowed_countries(self):
+        city_country_mapping = {'1': u'UA', '1057': u'RU', '2176': u'RU'}
+
+        check_against = {
+            'cities': [
+                    {'region__name': u'Кемеровская область', 'name': u'Березовский',
+                     'id': u'1057', 'longitude': Decimal('55.572479'), 'latitude': Decimal('86.192734')},
+                    {'region__name': u'Ханты-Мансийский автономный округ', 'name': u'Мегион',
+                     'id': u'2176', 'longitude': Decimal('61.050400'), 'latitude': Decimal('76.113472')},
+            ],
+            'regions': [
                     {'name':  u'Кемеровская область', 'country__code': u'RU'},
                     {'name':  u'Ханты-Мансийский автономный округ', 'country__code': u'RU'},
             ]
