@@ -64,8 +64,12 @@ class LocationCookieStorage(BaseLocationStorage):
     def set(self, location=None, force=False):
         if not self._validate_location(location):
             raise ValueError
-        if force or self._should_update_cookie(location.id):
-            self._do_set(location.id)
+        if location == settings.GEOIP_LOCATION_EMPTY_VALUE:
+            value = location
+        else:
+            value = location.id
+        if force or self._should_update_cookie(value):
+            self._do_set(value)
 
     def get_cookie_domain(self):
         if settings.GEOIP_COOKIE_DOMAIN:
