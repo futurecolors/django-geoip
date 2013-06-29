@@ -1,7 +1,11 @@
 Changelog
 =========
 
-0.3.0 (2012-01-29)
+0.3.1 (2013-06-29)
+------------------
+* Added ability to exclude countries on import via ``IPGEOBASE_ALLOWED_COUNTRIES`` option (thnx, @saippuakauppias)
+
+0.3.0 (2013-01-29)
 ------------------
 * Added python 3 support (3.2+)
 * ***IMPORTANT*** Minimum required django 1.4.2, use version 0.2.8, if you don't want to upgrade.

@@ -65,9 +65,9 @@ class ConvertTest(TestCase):
     def test_process_cidr_file(self):
         check_against = {
             'cidr': [
-                    {'start_ip': '33554432', 'end_ip': '34603007','country_id': 'FR', 'city_id': None},
-                    {'start_ip': '37249024', 'end_ip': '37251071','country_id': 'UA', 'city_id': '1'},
-                    {'start_ip': '37355520', 'end_ip': '37392639','country_id': 'RU', 'city_id': '2176'},
+                    {'start_ip': '33554432', 'end_ip': '34603007', 'country_id': 'FR', 'city_id': None},
+                    {'start_ip': '37249024', 'end_ip': '37251071', 'country_id': 'UA', 'city_id': '1'},
+                    {'start_ip': '37355520', 'end_ip': '37392639', 'country_id': 'RU', 'city_id': '2176'},
             ],
             'countries': set(['FR', 'UA', 'RU']),
             'city_country_mapping': {'2176': 'RU', '1': 'UA'}
@@ -79,6 +79,22 @@ class ConvertTest(TestCase):
         self.assertEqual(cidr_info['countries'], check_against['countries'])
         self.assertEqual(cidr_info['cidr'], check_against['cidr'])
 
+    @patch.object(settings, 'IPGEOBASE_ALLOWED_COUNTRIES', ['RU', 'UA'])
+    def test_process_cidr_file_with_allowed_countries(self):
+        check_against = {
+            'cidr': [
+                    {'start_ip': '37249024', 'end_ip': '37251071', 'country_id': 'UA', 'city_id': '1'},
+                    {'start_ip': '37355520', 'end_ip': '37392639', 'country_id': 'RU', 'city_id': '2176'},
+            ],
+            'countries': set(['UA', 'RU']),
+            'city_country_mapping': {'2176': 'RU', '1': 'UA'}
+        }
+        backend = IpGeobase()
+        cidr_info = backend._process_cidr_file(open(os.path.join(TEST_STATIC_DIR, 'cidr_optim.txt')))
+
+        self.assertEqual(cidr_info['city_country_mapping'], check_against['city_country_mapping'])
+        self.assertEqual(cidr_info['countries'], check_against['countries'])
+        self.assertEqual(cidr_info['cidr'], check_against['cidr'])
 
     def test_process_cities_file(self):
         city_country_mapping = {'1': 'UA', '1057': 'RU', '2176': 'RU'}
@@ -106,6 +122,29 @@ class ConvertTest(TestCase):
         self.assertEqual(cities_info['cities'], check_against['cities'])
         self.assertEqual(cities_info['regions'], check_against['regions'])
 
+    @patch.object(settings, 'IPGEOBASE_ALLOWED_COUNTRIES', ['RU'])
+    def test_process_cities_file_with_allowed_countries(self):
+        city_country_mapping = {'1': 'UA', '1057': 'RU', '2176': 'RU'}
+
+        check_against = {
+            'cities': [
+                    {'region__name': 'Кемеровская область', 'name': 'Березовский',
+                     'id': '1057', 'longitude': Decimal('55.572479'), 'latitude': Decimal('86.192734')},
+                    {'region__name': 'Ханты-Мансийский автономный округ', 'name': 'Мегион',
+                     'id': '2176', 'longitude': Decimal('61.050400'), 'latitude': Decimal('76.113472')},
+            ],
+            'regions': [
+                    {'name':  'Кемеровская область', 'country__code': 'RU'},
+                    {'name':  'Ханты-Мансийский автономный округ', 'country__code': 'RU'},
+            ]
+        }
+
+        backend = IpGeobase()
+        cities_info = backend._process_cities_file(io.open(os.path.join(TEST_STATIC_DIR, 'cities.txt'),
+                                                   encoding=settings.IPGEOBASE_FILE_ENCODING), city_country_mapping)
+
+        self.assertEqual(cities_info['cities'], check_against['cities'])
+        self.assertEqual(cities_info['regions'], check_against['regions'])
 
 class IpGeoBaseTest(TestCase):
     maxDiff = None

@@ -78,7 +78,10 @@ class IpGeobase(object):
     def _process_cidr_file(self, file):
         """ Iterate over ip info and extract useful data """
         data = {'cidr': list(), 'countries': set(), 'city_country_mapping': dict()}
+        allowed_countries = settings.IPGEOBASE_ALLOWED_COUNTRIES
         for cidr_info in self._line_to_dict(file, field_names=settings.IPGEOBASE_CIDR_FIELDS):
+            if allowed_countries and cidr_info['country_code'] not in allowed_countries:
+                continue
             city_id = cidr_info['city_id'] if cidr_info['city_id'] != '-' else None
             data['cidr'].append({'start_ip': cidr_info['start_ip'],
                                  'end_ip': cidr_info['end_ip'],
@@ -99,8 +102,11 @@ class IpGeobase(object):
     def _process_cities_file(self, file, city_country_mapping):
         """ Iterate over cities info and extract useful data """
         data = {'regions': list(), 'cities': list(), 'city_region_mapping': dict()}
+        allowed_countries = settings.IPGEOBASE_ALLOWED_COUNTRIES
         for geo_info in self._line_to_dict(file, field_names=settings.IPGEOBASE_CITIES_FIELDS):
             country_code = self._get_country_code_for_city(geo_info['city_id'], city_country_mapping, data['regions'])
+            if allowed_countries and country_code not in allowed_countries:
+                continue
             new_region = {'name': geo_info['region_name'],
                           'country__code': country_code}
             if new_region not in data['regions']:
