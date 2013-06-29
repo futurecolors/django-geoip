@@ -5,8 +5,9 @@ python:
   - 3.2
   - 3.3
 env:
-  - DJANGO=1.4.2
-  - DJANGO=1.5b2
+  - DJANGO=1.4.5
+  - DJANGO=1.5.1
+  - DJANGO=master
 install:
   - pip install https://github.com/django/django/archive/${DJANGO}.zip#egg=django
   - pip install -r tests/requirements.txt
@@ -17,6 +18,6 @@ script:
 matrix:
   exclude:
     - python: 3.2
-      env: DJANGO=1.4.2
+      env: DJANGO=1.4.5
     - python: 3.3
-      env: DJANGO=1.4.2
+      env: DJANGO=1.4.5
