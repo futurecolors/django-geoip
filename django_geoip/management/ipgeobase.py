@@ -4,12 +4,11 @@ import tempfile
 import logging
 import zipfile
 from decimal import Decimal
-from progressbar import ProgressBar, Percentage, Bar
 
 import requests
-from django.utils.six import BytesIO
+from progressbar import ProgressBar, Percentage, Bar
 from django.conf import settings
-from django.utils import six
+from django_geoip import compat
 
 from .iso3166_1 import ISO_CODES
 from django_geoip.models import IpRange, City, Region, Country
@@ -60,11 +59,7 @@ class IpGeobase(object):
 
     def _download_url_to_string(self, url):
         r = requests.get(url)
-        if six.PY3:
-            return BytesIO(r.content)
-        else:
-            return six.StringIO(r.content)
-        return buffer
+        return compat.BytesIO(r.content)
 
     def _line_to_dict(self, file, field_names):
         """ Converts file line into dictonary """

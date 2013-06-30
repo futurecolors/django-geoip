@@ -5,6 +5,7 @@ Changelog
 ------------------
 * Ability to exclude countries on import via ``IPGEOBASE_ALLOWED_COUNTRIES`` option (thnx, @saippuakauppias)
 * Store explicit empty location when no location matches (thnx, @saippuakauppias)
+* Restored Django 1.3 support
 
 
 0.3.0 (2013-01-29)
@@ -28,7 +29,6 @@ Changelog
 
 0.2.6 (2012-05-10)
 ------------------
-
 * Fixed a bug, introduced in 0.2.5, causing old facade name not work as expected.
 * ``set_location`` view now accepts both ``location`` and ``location_id``.
 * ***BACKWARDS INCOMPATIBLE*** Removed magic ``_get_cookie_domain`` behavior in favor of configuring ``GEOIP_COOKIE_DOMAIN``.
@@ -36,13 +36,11 @@ Changelog
 
 0.2.5 (2012-04-17)
 ------------------
-
 * ``GeoLocationFascade`` renamed to ``GeoLocationFacade``, old name will work till 0.3
 
 
 0.2.4 (2012-04-15)
 ------------------
-
 * Proper datamigration for countrynames
 * ``GeoLocationFascade`` defines abstract classmethods
 * ``bulk_create`` support for Django 1.4
@@ -53,7 +51,6 @@ Changelog
 
 0.2.3 (2012-04-11)
 ------------------
-
 * Added country names
 * Management update command renamed from ``ipgeobase_update`` to ``geoip_update``
 * Management command verbose output with progressbar
@@ -63,7 +60,6 @@ Changelog
 
 0.2.2 (2012-01-25)
 ------------------
-
 * Fixed middleware behavior when ``process_request`` never ran (redirects)
 * Improved location storage validation, fixed cookie domain detection
 * Added ``Locator.is_store_empty`` function to reveal if geoip detection was made
@@ -71,7 +67,6 @@ Changelog
 
 0.2.1 (2012-01-25)
 ------------------
-
 * Fixed middleware behavior when request.location is None
 * Added ``GEOIP_STORAGE_CLASS`` setting to override default user location storage
 * Introduced ``LocationDummyStorage`` class to avoid cookie storage
@@ -79,12 +74,10 @@ Changelog
 
 0.2 (2012-01-20)
 ----------------
-
 * Major refactoring of the app, added more tests
 * Fixed a typo in ``get_availabe_locations``
 
 
 0.1 (2012-01-18)
 ----------------
-
 * Initial release

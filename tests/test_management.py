@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from __future__ import unicode_literals
 import io
-
 import os
-from django.utils import six
 
 import requests
 from mock import patch
@@ -11,6 +9,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.conf import settings
+from django_geoip import compat
 
 from django_geoip.management.ipgeobase import IpGeobase
 from django_geoip.models import City, Region, Country, IpRange
@@ -59,7 +58,7 @@ class ConvertTest(TestCase):
         generator = backend._line_to_dict(
             file=io.open(os.path.join(TEST_STATIC_DIR, 'cities.txt'), encoding=settings.IPGEOBASE_FILE_ENCODING),
             field_names=settings.IPGEOBASE_CITIES_FIELDS)
-        result = six.advance_iterator(generator)
+        result = compat.advance_iterator(generator)
         self.assertEqual(result, check_against_dict)
 
     def test_process_cidr_file(self):
@@ -150,7 +149,7 @@ class IpGeoBaseTest(TestCase):
     maxDiff = None
 
     def assertCountEqual(self, first, second, msg=None):
-        if six.PY3:
+        if compat.PY3:
             return super(IpGeoBaseTest, self).assertCountEqual(first, second, msg)
         else:
             return super(IpGeoBaseTest, self).assertItemsEqual(first, second, msg)

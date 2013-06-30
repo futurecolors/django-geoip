@@ -5,10 +5,10 @@ from abc import ABCMeta
 
 from django.db import models
 from django.db.models.base import ModelBase
-from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 # keep imports
+from . import compat
 from .settings import geoip_settings, ipgeobase_settings
 
 
@@ -121,7 +121,7 @@ class AbsractModel(ABCMeta, ModelBase):
     pass
 
 
-class GeoLocationFacade(six.with_metaclass(AbsractModel), models.Model):
+class GeoLocationFacade(compat.with_metaclass(AbsractModel), models.Model):
     """ Interface for custom geographic models.
         Model represents a Facade pattern for concrete GeoIP models.
     """
