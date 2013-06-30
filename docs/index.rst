@@ -29,6 +29,7 @@ Contents
   reference
   djangohosts
   changelog
+  authors
 
 
 Development
