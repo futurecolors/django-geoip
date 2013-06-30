@@ -22,6 +22,8 @@ class BaseLocationStorage(object):
         raise NotImplemented
 
     def _validate_location(self, location):
+        if location == settings.GEOIP_LOCATION_EMPTY_VALUE:
+            return True
         if not isinstance(location, self.location_model):
             return False
         try:
@@ -63,8 +65,10 @@ class LocationCookieStorage(BaseLocationStorage):
     def set(self, location=None, force=False):
         if not self._validate_location(location):
             raise ValueError
-        if force or self._should_update_cookie(location.id):
-            self._do_set(location.id)
+        empty_value = settings.GEOIP_LOCATION_EMPTY_VALUE
+        cookie_value = empty_value if location == empty_value else location.id
+        if force or self._should_update_cookie(cookie_value):
+            self._do_set(cookie_value)
 
     def get_cookie_domain(self):
         if settings.GEOIP_COOKIE_DOMAIN:

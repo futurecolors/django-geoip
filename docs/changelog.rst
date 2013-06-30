@@ -1,9 +1,11 @@
 Changelog
 =========
 
-0.3.1 (2013-06-29)
+0.3.1 (2013-06-30)
 ------------------
-* Added ability to exclude countries on import via ``IPGEOBASE_ALLOWED_COUNTRIES`` option (thnx, @saippuakauppias)
+* Ability to exclude countries on import via ``IPGEOBASE_ALLOWED_COUNTRIES`` option (thnx, @saippuakauppias)
+* Store explicit empty location when no location matches (thnx, @saippuakauppias)
+
 
 0.3.0 (2013-01-29)
 ------------------

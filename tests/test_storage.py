@@ -43,6 +43,11 @@ class LocationCookieStorageTest(TestCase):
         self.assertTrue(storage._should_update_cookie(new_value=10))
 
     def test_should_not_update_cookie_if_cookie_is_none(self):
+        self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = settings.GEOIP_LOCATION_EMPTY_VALUE
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
+        self.assertFalse(storage._should_update_cookie(new_value=settings.GEOIP_LOCATION_EMPTY_VALUE))
+
+    def test_should_not_update_cookie_if_cookie_is_none(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = None
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertFalse(storage._should_update_cookie(new_value=None))
@@ -56,6 +61,15 @@ class LocationCookieStorageTest(TestCase):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = 42
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertTrue(storage._should_update_cookie(new_value=10))
+
+    def test_should_update_cookie_if_cookie_is_empty_value(self):
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
+        self.assertTrue(storage._should_update_cookie(new_value=settings.GEOIP_LOCATION_EMPTY_VALUE))
+
+    def test_validate_location_if_cookies_is_empty_value(self):
+        value = settings.GEOIP_LOCATION_EMPTY_VALUE
+        storage = LocationCookieStorage(request=self.request, response=HttpResponse())
+        self.assertTrue(storage._validate_location(location=value))
 
     @patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
     def test_malicious_cookie_is_no_problem(self):
