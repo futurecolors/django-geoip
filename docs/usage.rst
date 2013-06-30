@@ -85,11 +85,15 @@ Location should implement following classmethods:
 .. method:: get_by_ip_range(ip_range)
 
     Returns single instance of location model, corresponding to specified ip_range.
-    Raises ``DoesNotExist`` if no location is associated with give IP address.
+    Raises ``DoesNotExist`` if no location is associated with given IP address.
 
 .. method:: get_default_location()
 
     Returns single instance of location model, acting as a fallback when ``get_by_ip_range`` fails.
+
+    .. versionadded:: 0.3.1
+        It can return placeholder value ``GEOIP_LOCATION_EMPTY_VALUE`` to store empty location.
+        This is useful if you want to mark the location is unknown.
 
 .. _proxy model: https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-models
 
@@ -149,7 +153,7 @@ Switching location from front-end is very much like `changing language in Django
     by default named ``geoip_location_id``.
     (The name can be changed through the ``GEOIP_COOKIE_NAME`` setting.)
 
-    After setting the language choice, Django redirects the user, following this algorithm:
+    After setting the location choice, Django redirects the user, following this algorithm:
 
     * Django looks for a ``next`` parameter in the POST data.
     * If that doesn't exist, or is empty, Django tries the URL in the ``Referrer`` header.

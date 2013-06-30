@@ -20,6 +20,13 @@ To update your database with fresh entries
 
         python manage.py geoip_update --clear
 
+.. versionadded:: 0.3.1
+
+    To reduce the size of indexes and database you can exclude countries from import.
+    It's achieved by specifying only needed county codes in settings::
+
+        IPGEOBASE_ALLOWED_COUNTRIES = ['RU', 'UA']
+
 
 .. note::
     If you're having ``2006, 'MySQL server has gone away'`` error during database update,

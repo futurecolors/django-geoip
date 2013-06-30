@@ -1,7 +1,7 @@
 Reference
 =========
 
-This section comtains documentation to module internals, useful for ``django-geoip`` developers.
+This section contains documentation to module internals, useful for ``django-geoip`` developers.
 
 GeoLocationFacade
 ~~~~~~~~~~~~~~~~~~

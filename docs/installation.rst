@@ -1,7 +1,7 @@
 Installation
 ============
 
-This app works with python 2.6-2.7, Django 1.3 and higher.
+This app works with python 2.6-2.7, 3.2-3.3, Django 1.3 and higher.
 
 Recommended way to install is via pip::
 

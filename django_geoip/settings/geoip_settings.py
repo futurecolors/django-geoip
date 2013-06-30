@@ -22,8 +22,8 @@ class GeoIpConfig(AppConf):
     COOKIE_EXPIRES = 31622400
 
     #: Empty value for location, if location not found in ranges.
-    # This value must be returned in a :ref:`custom location model <location_model>`
-    # in get_default_location class method if necessary.
+    #: This value must be returned in a :ref:`custom location model <location_model>`
+    #: in get_default_location class method if necessary.
     LOCATION_EMPTY_VALUE = 0
 
     class Meta:
