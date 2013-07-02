@@ -32,7 +32,7 @@ class BaseLocationStorage(object):
             raise
 
     def _get_by_id(self, location_id):
-        return get_class(settings.GEOIP_LOCATION_MODEL).objects.get(pk=location_id)
+        return self.location_model.get_available_locations().get(pk=location_id)
 
 
 class LocationDummyStorage(BaseLocationStorage):
