@@ -26,7 +26,8 @@ class Locator(object):
         :return: :ref:`Custom location model <location_model>`
         """
         stored_location = self._get_stored_location()
-        if not stored_location:
+        stored_location_id = self._get_stored_location_id()
+        if stored_location_id is None:
             ip_range = self._get_ip_range()
             stored_location = self._get_corresponding_location(ip_range)
         return stored_location
@@ -95,3 +96,10 @@ class Locator(object):
         location_storage = storage_class(request=self.request, response=None)
         return location_storage.get()
 
+    def _get_stored_location_id(self):
+        """ Get location id from cookie.
+
+        :return: Integer or None (if request is first, not set location in middleware)
+        """
+        location_storage = storage_class(request=self.request, response=None)
+        return location_storage._get_location_id()
