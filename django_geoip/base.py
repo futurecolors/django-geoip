@@ -19,6 +19,7 @@ class Locator(object):
 
     def __init__(self, request):
         self.request = request
+        self.location_storage = storage_class(request=request, response=None)
 
     def locate(self):
         """ Find out what is user location (either from his IP or cookie).
@@ -93,13 +94,11 @@ class Locator(object):
         :type request: HttpRequest
         :return: Custom location model
         """
-        location_storage = storage_class(request=self.request, response=None)
-        return location_storage.get()
+        return self.location_storage.get()
 
     def _get_stored_location_id(self):
         """ Get location id from cookie.
 
         :return: Integer or None (if request is first, not set location in middleware)
         """
-        location_storage = storage_class(request=self.request, response=None)
-        return location_storage._get_location_id()
+        return self.location_storage._get_location_id()
