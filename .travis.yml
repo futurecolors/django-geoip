@@ -15,6 +15,7 @@ install:
   - python setup.py -q install
 script:
   - coverage run --source=django_geoip manage.py test
+after_success:
   - coveralls --verbose
 matrix:
   exclude:
