@@ -139,10 +139,10 @@ class IpGeobase(object):
         IpRange.objects.all().delete()
         city_region_mapping = self._build_city_region_mapping()
 
-        widgets = []
         if self.logger.getEffectiveLevel() in [logging.INFO, logging.DEBUG]:
-            widgets = [Percentage(), ' ', Bar()]
-        pbar = ProgressBar(widgets=widgets)
+            pbar = ProgressBar(widgets=[Percentage(), ' ', Bar()])
+        else:
+            pbar = iter
         for entry in pbar(cidr['cidr']):
             # skipping for country rows
             if entry['city_id']:
