@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.3.2 (TBA)
+-----------
+* Django 1.6 support
+
+
 0.3.1 (2013-06-30)
 ------------------
 * Ability to exclude countries on import via ``IPGEOBASE_ALLOWED_COUNTRIES`` option (thnx, @saippuakauppias)

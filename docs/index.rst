@@ -28,33 +28,22 @@ Contents
   settings
   reference
   djangohosts
+  contributing
   changelog
   authors
 
 
-Development
------------
+Contributing
+------------
 
-You can grab latest code on dev branch at Github_.
+You can grab latest code on ``dev`` branch at Github_.
 
 Feel free to submit issues_, pull requests are also welcome.
 
+Good contributions follow :ref:`simple guidelines <contributing>`
+
 .. _Github: https://github.com/futurecolors/django-geoip
 .. _issues: https://github.com/futurecolors/django-geoip/issues
-
-Tests
------
-
-.. toctree::
-  :hidden:
-
-  tests
-
-You can run testsuite this way::
-
-    python runtests.py
-
-:ref:`More on tests <tests>`
 
 .. |br| raw:: html
 
