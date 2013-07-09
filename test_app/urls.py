@@ -1,10 +1,15 @@
-# -*- coding: utf-8 -*-
-from django.conf.urls.defaults import patterns
+# coding: utf-8
+try:
+    from django.conf.urls import patterns
+except ImportError:
+    from django.conf.urls.defaults import patterns
 from django.http import HttpResponse
 from django_geoip.views import set_location
 
+
 def index_view(request):
     return HttpResponse()
+
 
 urlpatterns = patterns('',
     ('^$', index_view),
