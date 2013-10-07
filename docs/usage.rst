@@ -51,7 +51,8 @@ user's location should be accessible via ``request`` object::
         ...
 
 ``request.location`` is an instance of a custom model that you're required to create on your own
-(details below).
+(details below), you can get city object by ``request.location.city`` or for some IP doesn't have 
+city you could get country object by ``request.location.country`` .
 
 .. _location_model_rationale:
 
@@ -119,7 +120,7 @@ Very basic implementation of ``GeoLocationFacade`` for demonstration purpose::
         def get_by_ip_range(cls, ip_range):
             """ IpRange has one to many relationship with Country, Region and City.
                 Here we exploit the later relationship."""
-            return ip_range.city.my_custom_location
+            return ip_range
 
         @classmethod
         def get_default_location(cls):
