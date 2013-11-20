@@ -10,8 +10,10 @@ class IpGeoBaseConfig(AppConf):
     FILE_ENCODING = 'windows-1251'
 
     CITIES_FILENAME = 'cities.txt'
-    #    1	Хмельницкий	Хмельницкая область	Центральная Украина	49.416668	27.000000
-    CITIES_FIELDS = ['city_id', 'city_name', 'region_name', 'district_name', 'longitude', 'latitude']
+    # 1	Хмельницкий	Хмельницкая область	Центральная Украина	49.416668	27.000000
+    # <идентификатор города> <название города> <название региона> <название округа>
+    # <широта центра города> <долгота центра города>
+    CITIES_FIELDS = ['city_id', 'city_name', 'region_name', 'district_name', 'latitude', 'longitude']
 
     CIDR_FILENAME = 'cidr_optim.txt'
     #    1578795008	1578827775	94.26.128.0 - 94.26.255.255	RU	2287

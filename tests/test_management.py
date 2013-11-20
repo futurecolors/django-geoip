@@ -50,8 +50,8 @@ class ConvertTest(TestCase):
             'city_name': 'Хмельницкий',
             'region_name': 'Хмельницкая область',
             'district_name': 'Центральная Украина',
-            'longitude': '49.416668',
-            'latitude': '27.000000'
+            'latitude': '49.416668',
+            'longitude': '27.000000'
         }
 
         backend = IpGeobase()
@@ -101,11 +101,11 @@ class ConvertTest(TestCase):
         check_against = {
             'cities': [
                     {'region__name': 'Хмельницкая область', 'name': 'Хмельницкий',
-                     'id': '1', 'longitude': Decimal('49.416668'), 'latitude': Decimal('27.000000')},
+                     'id': '1', 'latitude': Decimal('49.416668'), 'longitude': Decimal('27.000000')},
                     {'region__name': 'Кемеровская область', 'name': 'Березовский',
-                     'id': '1057', 'longitude': Decimal('55.572479'), 'latitude': Decimal('86.192734')},
+                     'id': '1057', 'latitude': Decimal('55.572479'), 'longitude': Decimal('86.192734')},
                     {'region__name': 'Ханты-Мансийский автономный округ', 'name': 'Мегион',
-                     'id': '2176', 'longitude': Decimal('61.050400'), 'latitude': Decimal('76.113472')},
+                     'id': '2176', 'latitude': Decimal('61.050400'), 'longitude': Decimal('76.113472')},
             ],
             'regions': [
                     {'name':  'Хмельницкая область', 'country__code': 'UA'},
@@ -128,9 +128,9 @@ class ConvertTest(TestCase):
         check_against = {
             'cities': [
                     {'region__name': 'Кемеровская область', 'name': 'Березовский',
-                     'id': '1057', 'longitude': Decimal('55.572479'), 'latitude': Decimal('86.192734')},
+                     'id': '1057', 'longitude': Decimal('86.192734'), 'latitude': Decimal('55.572479')},
                     {'region__name': 'Ханты-Мансийский автономный округ', 'name': 'Мегион',
-                     'id': '2176', 'longitude': Decimal('61.050400'), 'latitude': Decimal('76.113472')},
+                     'id': '2176', 'longitude': Decimal('76.113472'), 'latitude': Decimal('61.050400')},
             ],
             'regions': [
                     {'name':  'Кемеровская область', 'country__code': 'RU'},
