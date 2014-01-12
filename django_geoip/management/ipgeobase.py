@@ -6,12 +6,12 @@ import zipfile
 from decimal import Decimal
 
 import requests
-from progressbar import ProgressBar, Percentage, Bar
 from django.conf import settings
-from django_geoip import compat
 
-from .iso3166_1 import ISO_CODES
+from django_geoip.vendor.progressbar import ProgressBar, Percentage, Bar
+from django_geoip import compat
 from django_geoip.models import IpRange, City, Region, Country
+from .iso3166_1 import ISO_CODES
 
 
 class IpGeobase(object):
@@ -88,7 +88,7 @@ class IpGeobase(object):
         return data
 
     def _get_country_code_for_city(self, city_id, mapping, added_data):
-        """ Get coutry code for city, if we don't know exactly, lets take last used country"""
+        """ Get country code for city, if we don't know exactly, lets take last used country"""
         try:
             return mapping[city_id]
         except KeyError:
