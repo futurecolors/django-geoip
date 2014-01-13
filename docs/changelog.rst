@@ -3,6 +3,7 @@ Changelog
 
 0.4 (2014-01-13)
 ----------------
+* ***BACKWARDS INCOMPATIBLE*** Fixed latitude and longitude being mixed up during import
 * Django 1.6 support
 * Support for pip 1.5
 
