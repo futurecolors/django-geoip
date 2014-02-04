@@ -9,7 +9,7 @@ from tests.factory import create_custom_location
 class SetLocationTest(TestCase):
 
     def setUp(self):
-        self.url = '/set_location/'
+        self.url = '/geoip/setlocation/'
         self.location = create_custom_location(MyCustomLocation)
 
         self.location_model_patcher = patch.object(settings, 'GEOIP_LOCATION_MODEL', 'test_app.models.MyCustomLocation')
