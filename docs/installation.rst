@@ -62,3 +62,6 @@ In order to make :ref:`user's location detection automatic <highlevel>` several 
         ...
     )
 
+* Specify this in :ref:`settings`: to use custom ip for test or use locally:
+
+  LOCAL_IP_ALTERNATIVE = '' # custom ip address

@@ -79,6 +79,13 @@ class Locator(object):
         :return: IpRange object or None
         """
         ip = self._get_real_ip()
+
+        # Trying to read custom ip from project setting
+        try:
+            ip = settings.LOCAL_IP_ALTERNATIVE
+        except:
+            pass
+
         try:
             geobase_entry = IpRange.objects.by_ip(ip)
         except IpRange.DoesNotExist:
