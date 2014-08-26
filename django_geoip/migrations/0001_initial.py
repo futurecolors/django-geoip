@@ -1,106 +1,87 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Country'
-        db.create_table('django_geoip_country', (
-            ('code', self.gf('django.db.models.fields.CharField')(max_length=2, primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-        ))
-        db.send_create_signal('django_geoip', ['Country'])
-
-        # Adding model 'Region'
-        db.create_table('django_geoip_region', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('country', self.gf('django.db.models.fields.related.ForeignKey')(related_name='regions', to=orm['django_geoip.Country'])),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('django_geoip', ['Region'])
-
-        # Adding unique constraint on 'Region', fields ['country', 'name']
-        db.create_unique('django_geoip_region', ['country_id', 'name'])
-
-        # Adding model 'City'
-        db.create_table('django_geoip_city', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('region', self.gf('django.db.models.fields.related.ForeignKey')(related_name='cities', to=orm['django_geoip.Region'])),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('latitude', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=9, decimal_places=6, blank=True)),
-            ('longitude', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=9, decimal_places=6, blank=True)),
-        ))
-        db.send_create_signal('django_geoip', ['City'])
-
-        # Adding unique constraint on 'City', fields ['region', 'name']
-        db.create_unique('django_geoip_city', ['region_id', 'name'])
-
-        # Adding model 'IpRange'
-        db.create_table('django_geoip_iprange', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('start_ip', self.gf('django.db.models.fields.BigIntegerField')(db_index=True)),
-            ('end_ip', self.gf('django.db.models.fields.BigIntegerField')(db_index=True)),
-            ('country', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['django_geoip.Country'])),
-            ('region', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['django_geoip.Region'], null=True)),
-            ('city', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['django_geoip.City'], null=True)),
-        ))
-        db.send_create_signal('django_geoip', ['IpRange'])
+from django.db import models, migrations
 
 
-    def backwards(self, orm):
-        
-        # Removing unique constraint on 'City', fields ['region', 'name']
-        db.delete_unique('django_geoip_city', ['region_id', 'name'])
+class Migration(migrations.Migration):
 
-        # Removing unique constraint on 'Region', fields ['country', 'name']
-        db.delete_unique('django_geoip_region', ['country_id', 'name'])
+    dependencies = [
+    ]
 
-        # Deleting model 'Country'
-        db.delete_table('django_geoip_country')
-
-        # Deleting model 'Region'
-        db.delete_table('django_geoip_region')
-
-        # Deleting model 'City'
-        db.delete_table('django_geoip_city')
-
-        # Deleting model 'IpRange'
-        db.delete_table('django_geoip_iprange')
-
-
-    models = {
-        'django_geoip.city': {
-            'Meta': {'unique_together': "(('region', 'name'),)", 'object_name': 'City'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'latitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '9', 'decimal_places': '6', 'blank': 'True'}),
-            'longitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '9', 'decimal_places': '6', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'region': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cities'", 'to': "orm['django_geoip.Region']"})
-        },
-        'django_geoip.country': {
-            'Meta': {'object_name': 'Country'},
-            'code': ('django.db.models.fields.CharField', [], {'max_length': '2', 'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
-        },
-        'django_geoip.iprange': {
-            'Meta': {'object_name': 'IpRange'},
-            'city': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_geoip.City']", 'null': 'True'}),
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_geoip.Country']"}),
-            'end_ip': ('django.db.models.fields.BigIntegerField', [], {'db_index': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'region': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['django_geoip.Region']", 'null': 'True'}),
-            'start_ip': ('django.db.models.fields.BigIntegerField', [], {'db_index': 'True'})
-        },
-        'django_geoip.region': {
-            'Meta': {'unique_together': "(('country', 'name'),)", 'object_name': 'Region'},
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'regions'", 'to': "orm['django_geoip.Country']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        }
-    }
-
-    complete_apps = ['django_geoip']
+    operations = [
+        migrations.CreateModel(
+            name='City',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='city name')),
+                ('latitude', models.DecimalField(null=True, max_digits=9, decimal_places=6, blank=True)),
+                ('longitude', models.DecimalField(null=True, max_digits=9, decimal_places=6, blank=True)),
+            ],
+            options={
+                'verbose_name': 'city',
+                'verbose_name_plural': 'cities',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Country',
+            fields=[
+                ('code', models.CharField(max_length=2, serialize=False, verbose_name='country code', primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=255, verbose_name='country name')),
+            ],
+            options={
+                'verbose_name': 'country',
+                'verbose_name_plural': 'countries',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='IpRange',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start_ip', models.BigIntegerField(verbose_name='Ip range block beginning, as integer', db_index=True)),
+                ('end_ip', models.BigIntegerField(verbose_name='Ip range block ending, as integer', db_index=True)),
+                ('city', models.ForeignKey(to='django_geoip.City', null=True)),
+                ('country', models.ForeignKey(to='django_geoip.Country')),
+            ],
+            options={
+                'verbose_name': 'IP range',
+                'verbose_name_plural': 'IP ranges',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Region',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='region name')),
+                ('country', models.ForeignKey(related_name='regions', to='django_geoip.Country')),
+            ],
+            options={
+                'verbose_name': 'region',
+                'verbose_name_plural': 'regions',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='region',
+            unique_together=set([('country', 'name')]),
+        ),
+        migrations.AddField(
+            model_name='iprange',
+            name='region',
+            field=models.ForeignKey(to='django_geoip.Region', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='city',
+            name='region',
+            field=models.ForeignKey(related_name='cities', to='django_geoip.Region'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='city',
+            unique_together=set([('region', 'name')]),
+        ),
+    ]
