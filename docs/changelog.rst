@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.5 (TBA)
+---------
+* Django 1.7 support (if you're using ``Django<1.7`` with ``South``, you'll need to upgrade South to latest version).
+* Fix ipgeobase update edge case when ``IPGEOBASE_ALLOWED_COUNTRIES`` is not empty
+
+
 0.4 (2014-01-13)
 ----------------
 * ***BACKWARDS INCOMPATIBLE*** Fixed latitude and longitude being mixed up during import
