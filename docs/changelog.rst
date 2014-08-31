@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.5 (TBA)
----------
+0.5 (2014-08-31)
+----------------
 * Django 1.7 support (if you're using ``Django<1.7`` with ``South``, you'll need to upgrade South to latest version).
 * Fix ipgeobase update edge case when ``IPGEOBASE_ALLOWED_COUNTRIES`` is not empty
 
