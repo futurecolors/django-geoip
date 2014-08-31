@@ -2,11 +2,11 @@ language: python
 python:
   - 2.6
   - 2.7
-  - 3.3
+  - 3.4
 env:
-  - DJANGO=1.4.10
-  - DJANGO=1.5.5
-  - DJANGO=1.6.1
+  - DJANGO=1.4.14
+  - DJANGO=1.5.9
+  - DJANGO=1.6.6
 install:
   - pip install https://github.com/django/django/archive/${DJANGO}.zip#egg=django
   - pip install -r tests/requirements.txt
@@ -17,5 +17,14 @@ after_success:
   - coveralls --verbose
 matrix:
   exclude:
-    - python: 3.3
-      env: DJANGO=1.4.10
+    - python: 3.4
+      env: DJANGO=1.4.14
+deploy:
+  provider: pypi
+  user: coagulant
+  password:
+    secure: h6U+juQbC9vAOdchfJttfOKaVxjRx9DdJi6NqQICLjj2KSmn7/G7HCp5Gvc+C2P6zEFV8QVTrDwbhjm1U8jg0KTsLw9E1OXJlH6OFF3U/Urn515x8RJ5FrjMacrlHd3ZEn14cM712FiwLzc72JT/xjm1RK+hgOpFqbOvlB/FgDM=
+  on:
+    tags: true
+    repo: futurecolors/django-geoip
+    branch: dev
