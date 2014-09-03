@@ -7,10 +7,10 @@ read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 setup(
     name='django-geoip',
-    version='0.5',
+    version='0.5.1',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
-    packages=find_packages(exclude="tests"),
+    packages=find_packages(exclude=("tests", "test_app", "docs")),
     url='https://github.com/futurecolors/django-geoip',
     license='MIT',
     description="App to figure out where your visitors are from by their IP address.",
@@ -30,5 +30,6 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
 )
