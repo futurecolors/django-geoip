@@ -79,7 +79,7 @@ class IpRangeManager(models.Manager):
             raise IpRange.DoesNotExist
 
         try:
-            return super(IpRangeManager, self).get_query_set()\
+            return super(IpRangeManager, self).get_queryset()\
                                               .filter(start_ip__lte=number, end_ip__gte=number)\
                                               .order_by('end_ip', '-start_ip')[0]
         except IndexError:
