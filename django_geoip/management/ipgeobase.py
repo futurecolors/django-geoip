@@ -39,11 +39,12 @@ class IpGeobase(object):
     def sync_database(self):
         cidr_info = self._process_cidr_file(io.open(self.files['cidr'], encoding=settings.IPGEOBASE_FILE_ENCODING))
         city_info = self._process_cities_file(io.open(self.files['cities'], encoding=settings.IPGEOBASE_FILE_ENCODING),
-                                              cidr_info['city_country_mapping'])
+            cidr_info['city_country_mapping'])
         self.logger.info('Updating locations...')
         self._update_geography(cidr_info['countries'],
                                city_info['regions'],
-                               city_info['cities'])
+                               city_info['cities'],
+                               cidr_info['city_country_mapping'])
         self.logger.info('Updating CIDR...')
         self._update_cidr(cidr_info)
 
@@ -118,7 +119,7 @@ class IpGeobase(object):
                                    'longitude': Decimal(geo_info['longitude'])})
         return data
 
-    def _update_geography(self, countries, regions, cities):
+    def _update_geography(self, countries, regions, cities, city_country_mapping):
         """ Update database with new countries, regions and cities """
         existing = {
             'cities': list(City.objects.values_list('id', flat=True)),
@@ -133,7 +134,7 @@ class IpGeobase(object):
                 Region.objects.create(name=entry['name'], country_id=entry['country__code'])
         for entry in cities:
             if int(entry['id']) not in existing['cities']:
-                region = Region.objects.get(name=entry['region__name'])
+                region = Region.objects.get(name=entry['region__name'], country__code=city_country_mapping[entry['id']])
                 City.objects.create(id=entry['id'], name=entry['name'], region=region,
                                     latitude=entry.get('latitude'), longitude=entry.get('longitude'))
 
