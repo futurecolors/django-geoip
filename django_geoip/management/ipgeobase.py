@@ -134,8 +134,10 @@ class IpGeobase(object):
                 Region.objects.create(name=entry['name'], country_id=entry['country__code'])
         for entry in cities:
             if int(entry['id']) not in existing['cities']:
-                region = Region.objects.get(name=entry['region__name'], country__code=city_country_mapping[entry['id']])
-                City.objects.create(id=entry['id'], name=entry['name'], region=region,
+                code = city_country_mapping.get(entry['id'])
+                if code:
+                    region = Region.objects.get(name=entry['region__name'], country__code=code)
+                    City.objects.create(id=entry['id'], name=entry['name'], region=region,
                                     latitude=entry.get('latitude'), longitude=entry.get('longitude'))
 
     def _update_cidr(self, cidr):
