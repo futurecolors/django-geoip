@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5.1 (2014-09-03)
+------------------
+* Fix packaging issues
+
+
 0.5 (2014-08-31)
 ----------------
 * Django 1.7 support (if you're using ``Django<1.7`` with ``South``, you'll need to upgrade South to latest version).
