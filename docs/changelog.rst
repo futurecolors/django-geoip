@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.5.2 (2015-02-04)
+------------------
+* Fix update command to handle regions with same name in different countries
+
 0.5.1 (2014-09-03)
 ------------------
 * Fix packaging issues
