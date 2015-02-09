@@ -20,13 +20,27 @@ Basic
                       ...
                      )
 
-* Create application tables in database::
-
-    python manage.py syncdb
-
-  If you're using South::
-
-    python manage.py migrate
+* Create application tables in database
+  
+  * If you're using Django >= 1.7::
+  
+      python manage.py migrate
+  
+  * If you're using South::
+  
+    Add ``SOUTH_MIGRATION_MODULES`` to settings.py::
+  
+        SOUTH_MIGRATION_MODULES = {
+          'django_geoip': 'django_geoip.south_migrations',
+        }
+  
+    And run::
+  
+      python manage.py migrate
+      
+  * Else::
+  
+      python manage.py syncdb
 
 
 * Obtain latest data to perform geoip detection by :ref:`running management command <update>`::
