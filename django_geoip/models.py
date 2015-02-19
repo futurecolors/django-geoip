@@ -21,6 +21,9 @@ class Country(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = _('country')
         verbose_name_plural = _('countries')
@@ -35,6 +38,9 @@ class Region(models.Model):
     name = models.CharField(_('region name'), max_length=255)
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -54,6 +60,9 @@ class City(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     class Meta:
