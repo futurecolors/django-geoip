@@ -6,19 +6,21 @@ from abc import ABCMeta
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import python_2_unicode_compatible
 
 # keep imports
 from . import compat
 from .settings import geoip_settings, ipgeobase_settings
 
 
+@python_2_unicode_compatible
 class Country(models.Model):
     """ One country per row, contains country code and country name.
     """
     code = models.CharField(_('country code'), max_length=2, primary_key=True)
     name = models.CharField(_('country name'), max_length=255, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -26,6 +28,7 @@ class Country(models.Model):
         verbose_name_plural = _('countries')
 
 
+@python_2_unicode_compatible
 class Region(models.Model):
     """ Region is a some geographical entity that belongs to one Country,
         Cities belong to one specific Region.
@@ -34,7 +37,7 @@ class Region(models.Model):
     country = models.ForeignKey(Country, related_name='regions')
     name = models.CharField(_('region name'), max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -43,6 +46,7 @@ class Region(models.Model):
         unique_together = (('country', 'name'), )
 
 
+@python_2_unicode_compatible
 class City(models.Model):
     """ Geopoint that belongs to the Region and Country.
         Identified by name and region.
@@ -53,7 +57,7 @@ class City(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
