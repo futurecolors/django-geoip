@@ -35,7 +35,11 @@ class IpRangeTest(TestCase):
         self.assertEqual(ip_range.city, self.city)
         self.assertEqual(ip_range.city.region, self.region)
         self.assertEqual(ip_range.city.region.country, self.country)
-
+        # with select_related
+        ip_range = IpRange.objects.select_related('city', 'region', 'country').by_ip('43.123.56.12')
+        self.assertEqual(ip_range.city, self.city)
+        self.assertEqual(ip_range.region, self.region)
+        self.assertEqual(ip_range.country, self.country)
 
 class GeoFacadeTest(TestCase):
 
