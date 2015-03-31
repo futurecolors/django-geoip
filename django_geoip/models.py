@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+from django.db.models.query import QuerySet
 
 # keep imports
 from . import compat
@@ -72,7 +73,7 @@ def inet_aton(ip):
     return struct.unpack('!L', socket.inet_aton(ip))[0]
 
 
-class IpRangeManager(models.Manager):
+class IpRangeQuerySet(QuerySet):
 
     def by_ip(self, ip):
         """ Find the smallest range containing the given IP.
@@ -83,11 +84,24 @@ class IpRangeManager(models.Manager):
             raise IpRange.DoesNotExist
 
         try:
-            return super(IpRangeManager, self).get_query_set()\
-                                              .filter(start_ip__lte=number, end_ip__gte=number)\
-                                              .order_by('end_ip', '-start_ip')[0]
+            return self.filter(start_ip__lte=number, end_ip__gte=number)\
+                       .order_by('end_ip', '-start_ip')[0]
         except IndexError:
             raise IpRange.DoesNotExist
+
+
+class IpRangeManager(models.Manager):
+    """
+    Manager allows to apply and mix any queryset methods, including custom.
+    """
+    def get_query_set(self):
+        return IpRangeQuerySet(self.model)
+
+    def __getattr__(self, attr, *args):
+        # see https://code.djangoproject.com/ticket/15062 for details
+        if attr.startswith("_"):
+            raise AttributeError
+        return getattr(self.get_query_set(), attr, *args)
 
 
 class IpRange(models.Model):
