@@ -7,7 +7,7 @@ read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 setup(
     name='django-geoip',
-    version='0.5.2',
+    version='0.5.2.1',
     author='Ilya Baryshev',
     author_email='baryshev@gmail.com',
     packages=find_packages(exclude=("tests", "test_app", "docs")),
