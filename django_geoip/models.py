@@ -94,14 +94,14 @@ class IpRangeManager(models.Manager):
     """
     Manager allows to apply and mix any queryset methods, including custom.
     """
-    def get_query_set(self):
+    def get_queryset(self):
         return IpRangeQuerySet(self.model)
 
     def __getattr__(self, attr, *args):
         # see https://code.djangoproject.com/ticket/15062 for details
         if attr.startswith("_"):
             raise AttributeError
-        return getattr(self.get_query_set(), attr, *args)
+        return getattr(self.get_queryset(), attr, *args)
 
 
 class IpRange(models.Model):
