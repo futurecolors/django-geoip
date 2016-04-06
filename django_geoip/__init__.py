@@ -1,1 +1,1 @@
-default_app_config = 'apps.Config'
+default_app_config = 'django_geoip.apps.Config'
