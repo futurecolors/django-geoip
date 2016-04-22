@@ -4,7 +4,6 @@ from mock import patch
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.utils import unittest
 from django.http import HttpResponse
 
 import django_geoip
@@ -66,8 +65,7 @@ class MiddlewareTest(TestCase):
         self.assertFalse(mock_set.called)
 
 
-@unittest.skipIf(RequestFactory is None, "RequestFactory is avaliable from 1.3")
-class GetLocationTest(unittest.TestCase):
+class GetLocationTest(TestCase):
     def setUp(self, *args, **kwargs):
         self.factory = RequestFactory()
 
