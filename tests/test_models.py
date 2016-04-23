@@ -51,6 +51,9 @@ class GeoFacadeTest(TestCase):
             def get_by_ip_range(cls, ip_range):
                 return None
 
+            class Meta:
+                app_label = 'tests'
+
         self.assertRaises(TypeError, MyFacade)
 
     def test_facade_is_abstract_django_model(self):

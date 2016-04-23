@@ -97,6 +97,11 @@ class IpRangeManager(models.Manager):
     def get_queryset(self):
         return IpRangeQuerySet(self.model)
 
+    def get_query_set(self):
+        """ backward compatibility with Django < 1.8
+        """
+        return self.get_queryset()
+
     def __getattr__(self, attr, *args):
         # see https://code.djangoproject.com/ticket/15062 for details
         if attr.startswith("_"):
