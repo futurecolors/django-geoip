@@ -62,3 +62,8 @@ In order to make :ref:`user's location detection automatic <highlevel>` several 
         ...
     )
 
+* Add local ISO codes if you want to change or add countries in :ref:`settings`::
+
+    GEOIP_CUSTOM_ISO_CODES = {
+        "RU": "Российская Федерация",
+    }
