@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 ISO_CODES = {
-    "AF": "Afghanistan",	
+    "AF": "Afghanistan",
     "AX": "Åland",
     "AL": "Albania",
     "DZ": "Algeria",
     "AS": "American Samoa",
-    "AD": "Andorra",	
-    "AO": "Angola",	
+    "AD": "Andorra",
+    "AO": "Angola",
     "AI": "Anguilla",
     "AQ": "Antarctica",
     "AG": "Antigua and Barbuda",
