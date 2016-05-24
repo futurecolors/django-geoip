@@ -183,7 +183,7 @@ class IpGeoBaseTest(TestCase):
         check_against_countries = [
             {'code':'FR', 'name':'France'},
             {'code':'UA', 'name':'Ukraine'},
-            {'code':'RU', 'name':'Russian Federation'}
+            {'code':'RU', 'name':'Russian Federation Custom Name'}
         ]
 
         self.assertCountEqual(Country.objects.all().values('code', 'name'), check_against_countries)
