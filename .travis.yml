@@ -4,9 +4,9 @@ python:
   - 2.7
   - 3.4
 env:
-  - DJANGO=1.4.14
-  - DJANGO=1.5.9
-  - DJANGO=1.6.6
+  - DJANGO=1.4.22
+  - DJANGO=1.5.12
+  - DJANGO=1.6.11
 install:
   - pip install https://github.com/django/django/archive/${DJANGO}.zip#egg=django
   - pip install -r tests/requirements.txt
@@ -18,7 +18,7 @@ after_success:
 matrix:
   exclude:
     - python: 3.4
-      env: DJANGO=1.4.14
+      env: DJANGO=1.4.22
 deploy:
   provider: pypi
   user: coagulant
