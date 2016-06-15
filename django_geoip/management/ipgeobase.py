@@ -14,6 +14,10 @@ from django_geoip.models import IpRange, City, Region, Country
 from .iso3166_1 import ISO_CODES
 
 
+custom_iso_codes = settings.GEOIP_CUSTOM_ISO_CODES
+ISO_CODES.update(custom_iso_codes)
+
+
 class IpGeobase(object):
     """Backend to download and update geography and ip addresses mapping.
     """

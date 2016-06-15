@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 def get_class(class_string):
     """
     Convert a string version of a function name to the callable object.

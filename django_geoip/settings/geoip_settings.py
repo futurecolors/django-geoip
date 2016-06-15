@@ -26,5 +26,9 @@ class GeoIpConfig(AppConf):
     #: in get_default_location class method if necessary.
     LOCATION_EMPTY_VALUE = 0
 
+    # A dict of custom codes and names to countries
+    # example: {'RU': 'Российская Федерация'}
+    CUSTOM_ISO_CODES = {}
+
     class Meta:
        prefix = 'geoip'
