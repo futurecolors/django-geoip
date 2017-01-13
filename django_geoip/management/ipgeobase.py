@@ -22,6 +22,8 @@ class IpGeobase(object):
     """Backend to download and update geography and ip addresses mapping.
     """
 
+    BULK_CHAIN = 10000
+
     def __init__(self, logger=None):
         self.files = {}
         self.logger = logger or logging.getLogger(name='geoip_update')
@@ -161,9 +163,14 @@ class IpGeobase(object):
                 entry.update({'region_id': city_region_mapping[int(entry['city_id'])]})
             if is_bulk_create_supported:
                 new_ip_ranges.append(IpRange(**entry))
+
+                if len(new_ip_ranges) >= self.BULK_CHAIN:
+                    IpRange.objects.bulk_create(new_ip_ranges)
+                    new_ip_ranges = []
             else:
                 IpRange.objects.create(**entry)
-        if is_bulk_create_supported:
+
+        if is_bulk_create_supported and new_ip_ranges:
             IpRange.objects.bulk_create(new_ip_ranges)
 
     def _build_city_region_mapping(self):
