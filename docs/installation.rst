@@ -1,7 +1,7 @@
 Installation
 ============
 
-This app works with python 2.6-2.7, 3.2-3.3, Django 1.3 and higher.
+This app works with python 2.7, 3.4+, Django 1.10 and higher.
 
 Recommended way to install is via pip::
 
@@ -22,10 +22,6 @@ Basic
 
 * Create application tables in database::
 
-    python manage.py syncdb
-
-  If you're using South::
-
     python manage.py migrate
 
 
@@ -43,7 +39,7 @@ In order to make :ref:`user's location detection automatic <highlevel>` several 
 
 * Add ``LocationMiddleware`` to ``MIDDLEWARE_CLASSES``::
 
-    MIDDLEWARE_CLASSES = (...
+    MIDDLEWARE = (...
         'django_geoip.middleware.LocationMiddleware',
         ...
     )
@@ -56,11 +52,11 @@ In order to make :ref:`user's location detection automatic <highlevel>` several 
 
 * Include app urls into your urlconf if you want to :ref:`allow visitors to change their location <setlocation>`::
 
-    urlpatterns += patterns('',
+    urlpatterns += [
         ...
-        (r'^geoip/', include('django_geoip.urls')),
+        url(r'^geoip/', include('django_geoip.urls')),
         ...
-    )
+    ]
 
 * Add local ISO codes if you want to change or add countries in :ref:`settings`::
 

@@ -13,7 +13,9 @@ else:
 SECRET_KEY = '_'
 ROOT_URLCONF = 'test_app.urls'
 INSTALLED_APPS = ('django_geoip', 'test_app')
-MIDDLEWARE_CLASSES = ()
+MIDDLEWARE = [
+
+]
 
 GEOIP_CUSTOM_ISO_CODES = {"RU": "Russian Federation Custom Name"}
 

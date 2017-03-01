@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 from django_geoip.base import storage_class
 
@@ -10,7 +11,7 @@ def get_location(request):
     return request._cached_location
 
 
-class LocationMiddleware(object):
+class LocationMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         """ Don't detect location, until we request it implicitly """
