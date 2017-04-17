@@ -42,7 +42,7 @@ class LocationCookieStorageTest(TestCase):
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertTrue(storage._should_update_cookie(new_value=10))
 
-    def test_should_not_update_cookie_if_cookie_is_none(self):
+    def test_should_not_update_cookie_if_cookie_is_empty(self):
         self.request.COOKIES[settings.GEOIP_COOKIE_NAME] = settings.GEOIP_LOCATION_EMPTY_VALUE
         storage = LocationCookieStorage(request=self.request, response=HttpResponse())
         self.assertFalse(storage._should_update_cookie(new_value=settings.GEOIP_LOCATION_EMPTY_VALUE))

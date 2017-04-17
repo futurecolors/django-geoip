@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
-from django_geoip.base import storage_class
 
 
 def get_location(request):
@@ -16,16 +15,3 @@ class LocationMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """ Don't detect location, until we request it implicitly """
         request.location = SimpleLazyObject(lambda: get_location(request))
-
-    def process_response(self, request, response):
-        """ Do nothing, if process_request never completed (redirect)"""
-        if not hasattr(request, 'location'):
-            return response
-
-        storage = storage_class(request=request, response=response)
-        try:
-            storage.set(location=request.location)
-        except ValueError:
-            # bad location_id
-            pass
-        return response
