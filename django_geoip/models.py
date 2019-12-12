@@ -6,7 +6,7 @@ from abc import ABCMeta
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import python_2_unicode_compatible
 from django.db.models.query import QuerySet
 
 # keep imports
@@ -35,7 +35,7 @@ class Region(models.Model):
         Cities belong to one specific Region.
         Identified by country and name.
     """
-    country = models.ForeignKey(Country, related_name='regions')
+    country = models.ForeignKey(Country, related_name='regions', on_delete=models.CASCADE)
     name = models.CharField(_('region name'), max_length=255)
 
     def __str__(self):
@@ -53,7 +53,7 @@ class City(models.Model):
         Identified by name and region.
         Contains additional latitude/longitude info.
     """
-    region = models.ForeignKey(Region, related_name='cities')
+    region = models.ForeignKey(Region, related_name='cities', on_delete=models.CASCADE)
     name = models.CharField(_('city name'), max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
@@ -120,9 +120,9 @@ class IpRange(models.Model):
     """
     start_ip = models.BigIntegerField(_('Ip range block beginning, as integer'), db_index=True)
     end_ip = models.BigIntegerField(_('Ip range block ending, as integer'), db_index=True)
-    country = models.ForeignKey(Country)
-    region = models.ForeignKey(Region, null=True)
-    city = models.ForeignKey(City, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, null=True, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, null=True, on_delete=models.CASCADE)
 
     objects = IpRangeManager()
 

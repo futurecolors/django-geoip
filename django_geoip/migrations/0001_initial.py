@@ -42,8 +42,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start_ip', models.BigIntegerField(verbose_name='Ip range block beginning, as integer', db_index=True)),
                 ('end_ip', models.BigIntegerField(verbose_name='Ip range block ending, as integer', db_index=True)),
-                ('city', models.ForeignKey(to='django_geoip.City', null=True)),
-                ('country', models.ForeignKey(to='django_geoip.Country')),
+                ('city', models.ForeignKey(to='django_geoip.City', null=True, on_delete=models.CASCADE)),
+                ('country', models.ForeignKey(to='django_geoip.Country', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'IP range',
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255, verbose_name='region name')),
-                ('country', models.ForeignKey(related_name='regions', to='django_geoip.Country')),
+                ('country', models.ForeignKey(related_name='regions', to='django_geoip.Country', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'region',
@@ -71,13 +71,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='iprange',
             name='region',
-            field=models.ForeignKey(to='django_geoip.Region', null=True),
+            field=models.ForeignKey(to='django_geoip.Region', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='city',
             name='region',
-            field=models.ForeignKey(related_name='cities', to='django_geoip.Region'),
+            field=models.ForeignKey(related_name='cities', to='django_geoip.Region', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
