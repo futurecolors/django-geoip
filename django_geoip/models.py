@@ -6,7 +6,7 @@ from abc import ABCMeta
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import python_2_unicode_compatible
 from django.db.models.query import QuerySet
 
 # keep imports
